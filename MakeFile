@@ -1,0 +1,14 @@
+build:
+	@go build -o cmd/main
+
+run:
+	@go run cmd/main.go
+
+test:
+	@go test -v ./...
+
+tidy:
+	@go mod tidy
+
+init:
+	@go mod init github.com/miriam-samuels/loan-management-backend
