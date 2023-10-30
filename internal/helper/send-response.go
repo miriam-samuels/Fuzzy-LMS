@@ -8,8 +8,9 @@ import (
 )
 
 func SendJSONResponse(w http.ResponseWriter, statusCode int, status bool, message string, data map[string]interface{}) {
-	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, OPTIONS")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(types.Response{
 		Status:  status,

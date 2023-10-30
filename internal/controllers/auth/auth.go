@@ -64,6 +64,8 @@ func LenderSignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func LenderSignIn(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	cred := &types.SignInCred{}
 	helper.ParseRequestBody(w, r, cred)
 
