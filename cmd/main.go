@@ -1,22 +1,30 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/miriam-samuels/loan-management-backend/internal/database"
 	v1 "github.com/miriam-samuels/loan-management-backend/internal/version/v1"
 )
 
 // connection port and host for local environment
 const (
-	CONN_PORT = "3000"
+	CONN_PORT = "6000"
 )
 
 func init() {
+	// Find .env file
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+
 	// Connect Database
 	client, err := database.NewPostgresClient(os.Getenv("LOAN_DB_DATASOURCE_URI"))
 	if err != nil {
@@ -46,15 +54,16 @@ func main() {
 
 	// add more configurations to server
 	server := http.Server{
-		Addr:        ":" + port,
-		Handler:     router,
-		ReadTimeout: time.Second * 90,
+		Addr:         ":" + port,
+		Handler:      router,
+		ReadTimeout:  time.Second * 90,
 		WriteTimeout: time.Second * 90,
 	}
-	// listen on port
+
+	// start server
+	fmt.Println("starting server on port :: " + port)
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
