@@ -31,7 +31,7 @@ func LenderSignUp(w http.ResponseWriter, r *http.Request) {
 	token, err := helper.SignJWT(userId.String())
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil)
-		fmt.Println("Could not generate token for user")
+		fmt.Printf("Could not generate token for user:: %v",err)
 		return
 	}
 
@@ -49,7 +49,7 @@ func LenderSignUp(w http.ResponseWriter, r *http.Request) {
 	result, err := stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email, encryptedPass, "lender", token)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
-		fmt.Println("Could not execute query statement")
+		fmt.Printf("Could not execute query statement:: %v",err)
 		return
 	}
 
@@ -83,6 +83,7 @@ func LenderSignIn(w http.ResponseWriter, r *http.Request) {
 		}
 		// if unknow error
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting user", nil)
+		fmt.Printf("error getting user %v", err)
 		return
 	}
 
@@ -98,7 +99,7 @@ func LenderSignIn(w http.ResponseWriter, r *http.Request) {
 	token, err := helper.SignJWT(user.ID)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil)
-		fmt.Println("Could not generate token for user")
+		fmt.Printf("error generating token %v", err)
 		return
 	}
 
