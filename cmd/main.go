@@ -11,6 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/miriam-samuels/loan-management-backend/internal/database"
 	v1 "github.com/miriam-samuels/loan-management-backend/internal/version/v1"
+	"github.com/rs/cors"
 )
 
 // connection port and host for local environment
@@ -52,10 +53,13 @@ func main() {
 	//  Defer connection to db close
 	defer database.LoanDb.Close()
 
+	//  cross origin
+	handler := cors.Default().Handler(router)
+
 	// add more configurations to server
 	server := http.Server{
 		Addr:         ":" + port,
-		Handler:      router,
+		Handler:      handler,
 		ReadTimeout:  time.Second * 90,
 		WriteTimeout: time.Second * 90,
 	}
