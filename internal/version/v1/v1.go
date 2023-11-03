@@ -3,6 +3,7 @@ package v1
 import (
 	"github.com/gorilla/mux"
 	"github.com/miriam-samuels/loan-management-backend/internal/routes/auth"
+	"github.com/miriam-samuels/loan-management-backend/internal/routes/loan"
 )
 
 func Routes(router *mux.Router) {
@@ -11,5 +12,6 @@ func Routes(router *mux.Router) {
 
 	// Register routes
 	auth.RegisterAuthRoutes(r)
+	loan.RegisterLoanRoutes(r)
 
 }

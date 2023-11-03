@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-func LenderSignUp(w http.ResponseWriter, r *http.Request) {
+func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	cred := &types.SignUpCred{}
 	helper.ParseRequestBody(w, r, cred)
 
@@ -31,7 +31,7 @@ func LenderSignUp(w http.ResponseWriter, r *http.Request) {
 	token, err := helper.SignJWT(userId.String())
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil)
-		fmt.Printf("Could not generate token for user:: %v",err)
+		fmt.Printf("Could not generate token for user:: %v", err)
 		return
 	}
 
@@ -46,10 +46,10 @@ func LenderSignUp(w http.ResponseWriter, r *http.Request) {
 	defer stmt.Close()
 
 	//execute statement
-	result, err := stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email, encryptedPass, "lender", token)
+	result, err := stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email, encryptedPass, cred.Role, token)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
-		fmt.Printf("Could not execute query statement:: %v",err)
+		fmt.Printf("Could not execute query statement:: %v", err)
 		return
 	}
 
@@ -58,12 +58,13 @@ func LenderSignUp(w http.ResponseWriter, r *http.Request) {
 		"token": token,
 		"id":    userId,
 		"email": cred.Email,
+		"role":  cred.Role,
 	}
 	helper.SendJSONResponse(w, http.StatusOK, true, "user signup successful", res)
 	log.Println(result)
 }
 
-func LenderSignIn(w http.ResponseWriter, r *http.Request) {
+func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	cred := &types.SignInCred{}
@@ -112,6 +113,7 @@ func LenderSignIn(w http.ResponseWriter, r *http.Request) {
 			"email":     user.Email,
 			"firstname": user.FirstName,
 			"lastname":  user.LastName,
+			"role":      user.Role,
 		},
 	}
 
