@@ -52,6 +52,8 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	// prepare query statement to insert new user into db -- this table is mostly used for authentication
 	stmt := helper.Prepare("INSERT INTO users (id, firstname, lastname, email, password, role) VALUES ($1, $2, $3, $4, $5, $6)", w)
 
+	defer stmt.Close()
+
 	//execute statement
 	result, err := stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email, encryptedPass, cred.Role)
 	if err != nil {
@@ -62,6 +64,8 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	//  check if the user is a borrower then insert into the borrowes table
 	if cred.Role == "borrower" {
 		stmt = helper.Prepare("INSERT INTO borrowers (id, firstname, lastname, email) VALUES ($1, $2, $3, $4)", w)
+		
+		defer stmt.Close()
 
 		result, err = stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email)
 		if err != nil {

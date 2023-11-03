@@ -1,6 +1,7 @@
 package loan
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -27,9 +28,12 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	//  prepare query statement to create loan application in db
 	stmt := helper.Prepare("INSERT INTO applications (id,loanId, borrowerId,type,term,amount,purpose) VALUES ($1, $2, $3, $4, $5, $6, $7)", w)
 
+	defer stmt.Close()
+
 	result, err := stmt.Exec(id, loanId, borrowerId, loanApp.Type, loanApp.Term, loanApp.Amount, loanApp.Purpose)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
+		fmt.Printf("ERROR:: %v", err)
 		return
 	}
 
