@@ -17,14 +17,17 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 
 	// generate UUID for loan
 	id := helper.GenerateUUID()
+
 	// generate easily identifiable id for loan
 	loanId := helper.GenerateLoanID()
 
-	//  prepare query statement to create loan application in db
-	query := "INSERT INTO applications (id,loanId, borrowerId,type,term,amount,purpose) VALUES ($1, $2, $3, $4, $5, $6, $7)"
-	stmt := helper.Prepare(query, w)
+	// get borrower id from request context
+	borrowerId := r.Context().Value("userId").(string)
 
-	result, err := stmt.Exec(id, loanId, loanApp.BorrowerId, loanApp.Type, loanApp.Term, loanApp.Amount, loanApp.Purpose)
+	//  prepare query statement to create loan application in db
+	stmt := helper.Prepare("INSERT INTO applications (id,loanId, borrowerId,type,term,amount,purpose) VALUES ($1, $2, $3, $4, $5, $6, $7)", w)
+
+	result, err := stmt.Exec(id, loanId, borrowerId, loanApp.Type, loanApp.Term, loanApp.Amount, loanApp.Purpose)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
 		return

@@ -50,10 +50,10 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// prepare query statement to insert new user into db -- this table is mostly used for authentication
-	stmt := helper.Prepare("INSERT INTO users (id, firstname, lastname, email, password, role, token) VALUES ($1, $2, $3, $4, $5, $6, $7)", w)
+	stmt := helper.Prepare("INSERT INTO users (id, firstname, lastname, email, password, role) VALUES ($1, $2, $3, $4, $5, $6)", w)
 
 	//execute statement
-	result, err := stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email, encryptedPass, cred.Role, token)
+	result, err := stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email, encryptedPass, cred.Role)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
 		return

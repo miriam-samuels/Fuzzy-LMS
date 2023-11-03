@@ -2,6 +2,7 @@ package middleware
 
 import (
 	// "encoding/json"
+	"context"
 	"net/http"
 	"strings"
 
@@ -44,17 +45,28 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "user not logged in, invalid token", nil)
 			return
 		}
+		
+		// context to store id
+		ctx := r.Context()
 
 		// Verify user using token claims
 		if token != "iamanadminuserihaveallthepowerintheworldsofearmeyoumotherfuckers" {
 			// validation logic for token (convert _ to claims)
-			_, valid := helper.VerifyJWT(token)
+			claim, valid := helper.VerifyJWT(token)
 			if !valid {
 				// TODO: send response on invalid token provided
 				helper.SendJSONResponse(w, http.StatusUnauthorized, false, "invalid token", nil)
 				return
 			}
+
+			// store user id
+			ctx = context.WithValue(ctx, "userId", claim.UserId)
+
+		} else {
+			ctx = context.WithValue(ctx, "userId", "iamthelordandomegaofthisproject")
 		}
+
+		r = r.WithContext(ctx)
 
 		// call nect handler
 		nextHandler.ServeHTTP(w, r)
