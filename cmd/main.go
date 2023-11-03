@@ -55,8 +55,10 @@ func main() {
 
 	//  cross origin
 	handler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
+		AllowedHeaders: []string{"Authorization"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "OPTIONS"},
 		Debug:            true,
 	}).Handler(router)
 
