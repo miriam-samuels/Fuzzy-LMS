@@ -4,48 +4,27 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/miriam-samuels/loan-management-backend/internal/database"
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
 	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
 //logic to create a new Loan Application goes here
 func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
-	application := &types.Borrower{}
-	helper.ParseRequestBody(w, r, application)
+	loanApp := &types.LoanApplication{}
+	helper.ParseRequestBody(w, r, loanApp)
 
 	// TODO: Validate request body
 
-	// generate ID for borrower
+	// generate UUID for loan
 	id := helper.GenerateUUID()
+	// generate easily identifiable id for loan
 	loanId := helper.GenerateLoanID()
 
-	// prepare query statement to insert new borrower into db
-	stmt, err := database.LoanDb.Prepare("INSERT INTO borrowers (id, loanId, firstname, lastname, email, phone, birth_date, gender, nationality, state_origin, address, passport, signature) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)")
-	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
-		return
-	}
-
-	defer stmt.Close()
-
-	//execute statement
-	result, err := stmt.Exec(id, loanId, application.FirstName, application.LastName, application.Email, application.Phone, application.BirthDate, application.Gender, application.Nationality, application.StateOrigin, application.Address, application.Passport, application.Signature)
-	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
-		return
-	}
-
 	//  prepare query statement to create loan application in db
-	stmt, err = database.LoanDb.Prepare("INSERT INTO applications (loanId, borrowerId) VALUES ($1, $2)")
-	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
-		return
-	}
+	query := "INSERT INTO applications (id,loanId, borrowerId,type,term,amount,purpose) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	stmt := helper.Prepare(query, w)
 
-	defer stmt.Close()
-
-	result, err = stmt.Exec(loanId, id)
+	result, err := stmt.Exec(id, loanId, loanApp.BorrowerId, loanApp.Type, loanApp.Term, loanApp.Amount, loanApp.Purpose)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
 		return
@@ -53,41 +32,34 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 
 	// Form response object
 	res := map[string]interface{}{
-		"id":          id,
-		"loanId":      loanId,
-		"application": application,
+		"id":     id,
+		"loanId": loanId,
+		"data":   loanApp,
 	}
 	helper.SendJSONResponse(w, http.StatusOK, true, "Loan application successfully created", res)
 	log.Println(result)
 }
 
 func GetAllLoanRequest(w http.ResponseWriter, r *http.Request) {
-	rows, err := database.LoanDb.Query("SELECT * FROM applications")
-	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting loans", nil)
-		return
-	}
+	rows := helper.Query("SELECT * FROM applications", w)
 
-	var loans types.LoanApplication
+	// slice to store all loan applications
+	var loanApplications []types.LoanApplication
 	// process query
 	for rows.Next() {
-		err = rows.Scan(&loans.LoanID, &loans.BorrowerId)
+		var loan types.LoanApplication
+		err := rows.Scan(&loan.ID, &loan.LoanID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose)
 		if err != nil {
 			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting loans", nil)
 			return
 		}
-	}
 
-	// row := database.LoanDb.QueryRow("SELECT * FROM borrowers WHERE loanId=$1", loans.LoanID)
-
-	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting loans", nil)
-		return
+		loanApplications = append(loanApplications, loan)
 	}
 
 	// Form response object
 	res := map[string]interface{}{
-		"loans": loans,
+		"loans": loanApplications,
 	}
 	helper.SendJSONResponse(w, http.StatusOK, true, "Loan application successfully created", res)
 }

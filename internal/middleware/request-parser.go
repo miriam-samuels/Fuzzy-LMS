@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
-	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
 // function to validate user authorization
@@ -46,23 +45,15 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 			return
 		}
 
-		// Verify user using token claims except god level user
-		var user types.User
+		// Verify user using token claims
 		if token != "iamanadminuserihaveallthepowerintheworldsofearmeyoumotherfuckers" {
 			// validation logic for token (convert _ to claims)
-			claim, valid := helper.VerifyJWT(token)
+			_, valid := helper.VerifyJWT(token)
 			if !valid {
-				// send response on invalid token provided
+				// TODO: send response on invalid token provided
 				helper.SendJSONResponse(w, http.StatusUnauthorized, false, "invalid token", nil)
 				return
 			}
-
-			// store user id
-			user.ID = claim.UserId
-
-			// TODO: get the user the token belongs to
-		} else {
-			user.ID = "helloworldiamagodleveluser"
 		}
 
 		// call nect handler

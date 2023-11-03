@@ -16,6 +16,20 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	helper.ParseRequestBody(w, r, cred)
 
 	// TODO: Validate request body
+
+	// check if user already exists
+	var exists bool
+	err := database.LoanDb.QueryRow("SELECT 1 FROM users WHERE email=$1", cred.Email).Scan(&exists)
+	if err != nil {
+		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error encoutered", nil)
+		return
+	}
+
+	if exists {
+		helper.SendJSONResponse(w, http.StatusBadRequest, false, "user exist", nil)
+		return
+	}
+
 	// encrypt user password
 	encryptedPass, err := helper.Encrypt(cred.Password)
 	if err != nil {
@@ -35,30 +49,34 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// prepare query statement to insert new user into db
-	stmt, err := database.LoanDb.Prepare("INSERT INTO users (id, firstname, lastname, email, password, role, token) VALUES ($1, $2, $3, $4, $5, $6, $7)")
-	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
-		fmt.Printf("Could not insert user into db %v", err)
-		return
-	}
-
-	defer stmt.Close()
+	// prepare query statement to insert new user into db -- this table is mostly used for authentication
+	stmt := helper.Prepare("INSERT INTO users (id, firstname, lastname, email, password, role, token) VALUES ($1, $2, $3, $4, $5, $6, $7)", w)
 
 	//execute statement
 	result, err := stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email, encryptedPass, cred.Role, token)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
-		fmt.Printf("Could not execute query statement:: %v", err)
 		return
 	}
 
+	//  check if the user is a borrower then insert into the borrowes table
+	if cred.Role == "borrower" {
+		stmt = helper.Prepare("INSERT INTO borrowers (id, firstname, lastname, email) VALUES ($1, $2, $3, $4)", w)
+
+		result, err = stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email)
+		if err != nil {
+			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
+			return
+		}
+	}
 	// Form response object
 	res := map[string]interface{}{
-		"token": token,
-		"id":    userId,
-		"email": cred.Email,
-		"role":  cred.Role,
+		"token":     token,
+		"id":        userId,
+		"firstname": cred.FirstName,
+		"lastname":  cred.LastName,
+		"email":     cred.Email,
+		"role":      cred.Role,
 	}
 	helper.SendJSONResponse(w, http.StatusOK, true, "user signup successful", res)
 	log.Println(result)
