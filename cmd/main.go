@@ -54,7 +54,11 @@ func main() {
 	defer database.LoanDb.Close()
 
 	//  cross origin
-	handler := cors.Default().Handler(router)
+	handler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler(router)
 
 	// add more configurations to server
 	server := http.Server{
