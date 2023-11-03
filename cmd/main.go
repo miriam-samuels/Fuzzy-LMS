@@ -57,8 +57,8 @@ func main() {
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		AllowedHeaders: []string{"Authorization"},
-		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "OPTIONS"},
 		Debug:            true,
 	}).Handler(router)
 
