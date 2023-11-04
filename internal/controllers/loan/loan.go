@@ -87,7 +87,7 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	} else if user.Role == "lender" {
 		rows, err = database.LoanDb.Query("SELECT * FROM applications" + statusCondition)
 	}
-	
+
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil)
 		return
@@ -98,7 +98,7 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	// process query
 	for rows.Next() {
 		var loan types.Loan
-		err := rows.Scan(&loan.ID, &loan.LoanID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status)
+		err := rows.Scan(&loan.LoanID, &loan.ID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status)
 		if err != nil {
 			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting loans", nil)
 			return
