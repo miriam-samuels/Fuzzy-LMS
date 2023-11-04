@@ -1,17 +1,19 @@
 package loan
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/miriam-samuels/loan-management-backend/internal/database"
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
 	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
 //logic to create a new Loan Application goes here
 func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
-	loanApp := &types.LoanApplication{}
+	loanApp := &types.Loan{}
 	helper.ParseRequestBody(w, r, loanApp)
 
 	// TODO: Validate request body
@@ -47,26 +49,67 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	log.Println(result)
 }
 
-func GetAllLoanRequest(w http.ResponseWriter, r *http.Request) {
-	rows := helper.Query("SELECT * FROM applications", w)
+func GetLoans(w http.ResponseWriter, r *http.Request) {
+	// get loan status query parameter (status)
+	status := r.URL.Query().Get("status")
+
+	// get id of user making request
+	userId := r.Context().Value("userId").(string)
+
+	// variable to store user
+	var user types.User
+
+	// get user details from db
+	err := database.LoanDb.QueryRow("SELECT role FROM users WHERE id = $1", userId).Scan(&user.Role)
+	if err != nil {
+		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil)
+		return
+	}
+
+	//set status condition for query based on request query params
+	var statusCondition string
+	switch status {
+	case "pending":
+		statusCondition = " AND status = 'pending'"
+	case "reviewing":
+		statusCondition = " AND status = 'reviewing'"
+	case "approved":
+		statusCondition = " AND status = 'approved'"
+	case "declined":
+		statusCondition = " AND status = 'declined'"
+	default:
+		statusCondition = ""
+	}
+
+	var rows *sql.Rows
+	if user.Role == "borrower" {
+		rows, err = database.LoanDb.Query("SELECT * FROM applications WHERE borrowerId = $1"+statusCondition, userId)
+	} else if user.Role == "lender" {
+		rows, err = database.LoanDb.Query("SELECT * FROM applications" + statusCondition)
+	}
+	
+	if err != nil {
+		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil)
+		return
+	}
 
 	// slice to store all loan applications
-	var loanApplications []types.LoanApplication
+	var loans []types.Loan
 	// process query
 	for rows.Next() {
-		var loan types.LoanApplication
-		err := rows.Scan(&loan.ID, &loan.LoanID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose)
+		var loan types.Loan
+		err := rows.Scan(&loan.ID, &loan.LoanID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status)
 		if err != nil {
 			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting loans", nil)
 			return
 		}
 
-		loanApplications = append(loanApplications, loan)
+		loans = append(loans, loan)
 	}
 
 	// Form response object
 	res := map[string]interface{}{
-		"loans": loanApplications,
+		"loans": loans,
 	}
 	helper.SendJSONResponse(w, http.StatusOK, true, "Loan application successfully created", res)
 }
