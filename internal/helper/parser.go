@@ -2,6 +2,7 @@ package helper
 
 import (
 	"encoding/json"
+	"mime/multipart"
 	"net/http"
 )
 
@@ -17,4 +18,20 @@ func ParseRequestBody(w http.ResponseWriter, r *http.Request, i interface{}) err
 		}
 	}
 	return nil
+}
+
+func ParseMultipartRequestBody(w http.ResponseWriter, r *http.Request) (multipart.File, error) {
+	//  PARSE formdata including uploaded file
+	err := r.ParseMultipartForm(10 << 20) // 10mb limit
+	if err != nil {
+		SendJSONResponse(w, http.StatusBadRequest, false, "error parsing body:", nil)
+		return nil, err
+	}
+
+	f, _, err := r.FormFile("file")
+	if err != nil {
+		SendJSONResponse(w, http.StatusBadRequest, false, "Unable to retrieve file from form", nil)
+		return nil, err
+	}
+	return f, err
 }
