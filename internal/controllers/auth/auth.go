@@ -42,7 +42,7 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	userId := helper.GenerateUUID()
 
 	// generate session token
-	token, err := helper.SignJWT(userId.String())
+	token, err := helper.SignJWT(userId.String(), cred.Role)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil)
 		fmt.Printf("Could not generate token for user:: %v", err)
@@ -64,7 +64,7 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	//  check if the user is a borrower then insert into the borrowes table
 	if cred.Role == "borrower" {
 		stmt = helper.Prepare("INSERT INTO borrowers (id, firstname, lastname, email) VALUES ($1, $2, $3, $4)", w)
-		
+
 		defer stmt.Close()
 
 		result, err = stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email)
@@ -99,7 +99,8 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 
 	// variable to store data returned by db if user is found
 	var user types.User
-	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Role)
+	var passwordHash string
+	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &passwordHash, &user.Role)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// send response that user does not exist
@@ -113,7 +114,7 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// confirm user password is correct
-	err = helper.CompareHashAndString(user.Password, cred.Password)
+	err = helper.CompareHashAndString(passwordHash, cred.Password)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusBadRequest, false, "incorrect password", nil)
 		fmt.Printf("incorrect password: %v", err)
@@ -121,7 +122,7 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// generate session token
-	token, err := helper.SignJWT(user.ID)
+	token, err := helper.SignJWT(user.ID, user.Role)
 	if err != nil {
 		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil)
 		fmt.Printf("error generating token %v", err)
@@ -130,13 +131,7 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 
 	res := map[string]interface{}{
 		"token": token,
-		"user": map[string]string{
-			"id":        user.ID,
-			"email":     user.Email,
-			"firstname": user.FirstName,
-			"lastname":  user.LastName,
-			"role":      user.Role,
-		},
+		"user": user,
 	}
 
 	helper.SendJSONResponse(w, http.StatusOK, true, "user login successful", res)

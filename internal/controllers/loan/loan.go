@@ -56,15 +56,8 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	// get id of user making request
 	userId := r.Context().Value("userId").(string)
 
-	// variable to store user
-	var user types.User
-
-	// get user details from db
-	err := database.LoanDb.QueryRow("SELECT role FROM users WHERE id = $1", userId).Scan(&user.Role)
-	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil)
-		return
-	}
+	// get role of user making request
+	userRole := r.Context().Value("userRole").(string)
 
 	//set status condition for query based on request query params
 	var statusCondition string
@@ -82,9 +75,10 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var rows *sql.Rows
-	if user.Role == "borrower" {
+	var err error
+	if userRole == "borrower" {
 		rows, err = database.LoanDb.Query("SELECT * FROM applications WHERE borrowerId = $1"+statusCondition, userId)
-	} else if user.Role == "lender" {
+	} else if userRole == "lender" {
 		rows, err = database.LoanDb.Query("SELECT * FROM applications" + statusCondition)
 	}
 

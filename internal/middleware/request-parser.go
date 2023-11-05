@@ -45,8 +45,8 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "user not logged in, invalid token", nil)
 			return
 		}
-		
-		// context to store id
+
+		// context to store id and role
 		ctx := r.Context()
 
 		// Verify user using token claims
@@ -59,11 +59,13 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 				return
 			}
 
-			// store user id
+			// store user id and role
 			ctx = context.WithValue(ctx, "userId", claim.UserId)
+			ctx = context.WithValue(ctx, "userRole", claim.Role)
 
 		} else {
-			ctx = context.WithValue(ctx, "userId", "iamthelordandomegaofthisproject")
+			ctx = context.WithValue(ctx, "userId", "4c9ae046-0836-434f-a046-c372eedcdf6b")
+			ctx = context.WithValue(ctx, "userRole", "borrower")
 		}
 
 		r = r.WithContext(ctx)

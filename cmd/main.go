@@ -59,7 +59,7 @@ func main() {
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "OPTIONS"},
-		Debug:            true,
+		// Debug:            true,
 	}).Handler(router)
 
 	// add more configurations to server

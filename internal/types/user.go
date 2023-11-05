@@ -5,7 +5,6 @@ type User struct {
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 	Email     string `json:"email"`
-	Password  string `json:"password"`
 	Role      string `json:"role"`
 }
 
@@ -40,6 +39,7 @@ type Borrower struct {
 	BankName       string      `json:"bank_name"`
 	AccountNumber  string      `json:"account"`
 	Identification string      `json:"identification"`
+	LoanIds        []string    `json:"loan_ids"`
 }
 
 type NextOfKin struct {
