@@ -2,7 +2,6 @@ package helper
 
 import (
 	"math/rand"
-	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,13 +11,22 @@ func GenerateUUID() uuid.UUID {
 	return uuid.New()
 }
 
-func GenerateLoanID() string {
-	rand.Seed(time.Now().UnixNano())
+func GenerateUniqueId(length int) string {
+	// Define the character set of digits (0-9)
+	characters := "0123456789abcdefghijklmnopqrstuvwxyz"
 
-	// Generate a random 6-digit number.
-	min := 100000 // Smallest 6-digit number
-	max := 999999 // Largest 6-digit number
-	id := rand.Intn(max-min+1) + min
+	// Create a new source for random number generation
+	source := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(source)
 
-	return "Loan" + strconv.Itoa(id)
+	// Create a byte slice to store the generated ID
+	id := make([]byte, length)
+
+	// Generate the ID by randomly selecting digits from the character set
+	for i := range id {
+		id[i] = characters[r.Intn(len(characters))]
+	}
+
+	// Convert the byte slice to a string
+	return string(id)
 }

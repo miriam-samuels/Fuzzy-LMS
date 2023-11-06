@@ -11,7 +11,7 @@ import (
 	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
-//logic to create a new Loan Application goes here
+// logic to create a new Loan Application goes here
 func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	loanApp := &types.Loan{}
 	helper.ParseRequestBody(w, r, loanApp)
@@ -22,7 +22,7 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	id := helper.GenerateUUID()
 
 	// generate easily identifiable id for loan
-	loanId := helper.GenerateLoanID()
+	loanId := "Loan" + helper.GenerateUniqueId(6)
 
 	// get borrower id from request context
 	borrowerId := r.Context().Value("userId").(string)

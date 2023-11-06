@@ -15,10 +15,10 @@ func UploadMedia(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	// GENERATE unique id for media
-	mediaName := helper.GenerateUUID()
+	mediaName := "MEDIA" + helper.GenerateUniqueId(4)
 
 	// open new file in bucket
-	media := config.LoanBucket.Object(mediaName.String())
+	media := config.LoanBucket.Object(mediaName)
 
 	wc := media.NewWriter(context.Background())
 
@@ -43,7 +43,7 @@ func UploadMedia(w http.ResponseWriter, r *http.Request) {
 
 	// form ok response
 	res := map[string]interface{}{
-		"url": downloadURL,
+		"url": downloadURL.MediaLink,
 	}
 	helper.SendJSONResponse(w, http.StatusOK, true, "Media Uploaded Successfully", res)
 
