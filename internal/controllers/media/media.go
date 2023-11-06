@@ -30,14 +30,14 @@ func UploadMedia(w http.ResponseWriter, r *http.Request) {
 
 	// close writer
 	if err := wc.Close(); err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "Unable to close storage writer", nil)
+		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "Unable to close storage writer"+err.Error(), nil)
 		return
 	}
 
 	// Generate a download URL for the uploaded file
 	downloadURL, err := media.Attrs(context.Background())
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "Unable to get download URL", nil)
+		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "Unable to get download URL"+err.Error(), nil)
 		return
 	}
 
