@@ -61,7 +61,8 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			&brw.BankName,
 			&brw.AccountNumber,
 			&brw.Identification,
-			&loanIds)
+			&loanIds,
+			&brw.Progress)
 		if err != nil {
 			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error encoutered::"+err.Error(), nil)
 			return
@@ -101,18 +102,18 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	helper.ParseRequestBody(w, r, &user)
 
 	if userRole == "borrower" {
-		query := "UPDATE borrowers SET phone = $1, birth_date = $2, gender = $3, nationality = $4, state_origin = $5, address = $6, passport = $7, signature = $8,  job = $9, job_term = $10, income = $11, deck = $12, has_criminal_record = $13, offences = $14, jail_time = $15, has_collateral = $16, collateral = $17, collateral_docs = $18, kin = $19, guarantor = $20, nin_slip = $21, nin = $22, bvn = $23, bank_name = $24, account = $25, identification = $26, loan_ids = $27 WHERE id = $28"
+		query := "UPDATE borrowers SET phone = $1, birth_date = $2, gender = $3, nationality = $4, state_origin = $5, address = $6, passport = $7, signature = $8,  job = $9, job_term = $10, income = $11, deck = $12, has_criminal_record = $13, offences = $14, jail_time = $15, has_collateral = $16, collateral = $17, collateral_docs = $18, kin = $19, guarantor = $20, nin_slip = $21, nin = $22, bvn = $23, bank_name = $24, account = $25, identification = $26, loan_ids = $27, progress = $28 WHERE id = $29"
 
 		stmt := helper.Prepare(query, w)
 
 		defer stmt.Close()
 
-		_, err := stmt.Exec(user.Phone,user.BirthDate, user.Gender, user.Nationality, user.StateOrigin,
-			user.Address, user.Passport, user.Signature, user.Job, user.JobTerm, user.Income, user.Deck, user.HasCriminalRec, 
+		_, err := stmt.Exec(user.Phone, user.BirthDate, user.Gender, user.Nationality, user.StateOrigin,
+			user.Address, user.Passport, user.Signature, user.Job, user.JobTerm, user.Income, user.Deck, user.HasCriminalRec,
 			pq.Array(user.Offences), user.JailTime, user.HasCollateral, pq.Array(user.Collateral),
 			user.CollateralDoc, pq.Array(user.Kin), pq.Array(user.Guarantor),
 			user.NinSlip, user.Nin, user.Bvn, user.BankName, user.AccountNumber,
-			user.Identification, pq.Array(user.LoanIds), userId)
+			user.Identification, pq.Array(user.LoanIds), user.Progress, userId)
 		if err != nil {
 			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
 			return

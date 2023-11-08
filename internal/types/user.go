@@ -40,6 +40,7 @@ type Borrower struct {
 	AccountNumber  string      `json:"account"`
 	Identification string      `json:"identification"`
 	LoanIds        []string    `json:"loan_ids"`
+	Progress			uint8			`json:"progress"`
 }
 
 type NextOfKin struct {
