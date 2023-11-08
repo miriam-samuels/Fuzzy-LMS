@@ -2,7 +2,6 @@ package types
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 )
 
 type SignUpCred struct {
@@ -10,6 +9,7 @@ type SignUpCred struct {
 	LastName  string `json:"lastname"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
+	Role      string `json:"role"`
 }
 
 type SignInCred struct {
@@ -18,6 +18,7 @@ type SignInCred struct {
 }
 
 type JWTClaims struct {
-	UserId uuid.UUID `json:"_id"`
+	UserId string `json:"_id"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }

@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
-func SignJWT(user uuid.UUID) (string, error) {
+func SignJWT(user string, role string) (string, error) {
 	// generate new token with signing method and claims
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, types.JWTClaims{
 		UserId: user,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			//  issued at the utc equivalent of the current time
 			IssuedAt: jwt.NewNumericDate(time.Now().UTC()),
