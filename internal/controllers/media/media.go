@@ -4,9 +4,8 @@ import (
 	"context"
 	"io"
 	"net/http"
-
-	config "github.com/miriam-samuels/loan-management-backend/internal/config/storage"
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
+	"github.com/miriam-samuels/loan-management-backend/internal/storage"
 )
 
 func UploadMedia(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +17,7 @@ func UploadMedia(w http.ResponseWriter, r *http.Request) {
 	mediaName := "MEDIA" + helper.GenerateUniqueId(4)
 
 	// open new file in bucket
-	media := config.LoanBucket.Object(mediaName)
+	media := storage.LoanBucket.Object(mediaName)
 
 	wc := media.NewWriter(context.Background())
 

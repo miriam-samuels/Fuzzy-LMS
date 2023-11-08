@@ -9,8 +9,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	config "github.com/miriam-samuels/loan-management-backend/internal/config/storage"
 	"github.com/miriam-samuels/loan-management-backend/internal/database"
+	"github.com/miriam-samuels/loan-management-backend/internal/storage"
 	v1 "github.com/miriam-samuels/loan-management-backend/internal/version/v1"
 	"github.com/rs/cors"
 )
@@ -37,12 +37,12 @@ func init() {
 	database.LoanDb = client
 
 	// Connect to Storage Bucket
-	bucket, err := config.NewFirebaseBucket("serviceAccountKey.json", os.Getenv("STORAGE_BUCKET"))
+	bucket, err := storage.NewFirebaseBucket("serviceAccountKey.json", os.Getenv("STORAGE_BUCKET"))
 	if err != nil {
-		log.Fatal("error getting storage bucket: %v", err)
+		log.Fatal("error getting storage bucket ::", err)
 	}
 	// set loan bucket to gotten bucket
-	config.LoanBucket = bucket
+	storage.LoanBucket = bucket
 }
 
 func main() {
