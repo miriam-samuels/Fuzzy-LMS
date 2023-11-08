@@ -1,10 +1,10 @@
 package helper
 
 import (
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/miriam-samuels/loan-management-backend/internal/constants"
 	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
@@ -18,18 +18,18 @@ func SignJWT(user string, role string) (string, error) {
 			IssuedAt: jwt.NewNumericDate(time.Now().UTC()),
 			//  token to expire in 6hrs from the current time
 			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(time.Hour * 6)),
-			Issuer:    os.Getenv("APP_NAME"),
+			Issuer:    constants.Env.AppName,
 		},
 	})
 
 	// return token with an error message if it fails
-	return claims.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	return claims.SignedString([]byte(constants.Env.JWTSecret))
 }
 
 func VerifyJWT(token string) (*types.JWTClaims, bool) {
 	// Parse the token string and store the result in claims
 	tkn, err := jwt.ParseWithClaims(token, &types.JWTClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
+		return []byte(constants.Env.JWTSecret), nil
 	})
 
 	// if no error and token is valid return thr claims and a true for validity

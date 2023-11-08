@@ -1,13 +1,13 @@
 package media
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/miriam-samuels/loan-management-backend/internal/controllers/media"
 	"github.com/miriam-samuels/loan-management-backend/internal/middleware"
+	"github.com/opensaucerer/barf"
 )
 
-func RegisterMediaRoutes(r *mux.Router) {
-	router := r.PathPrefix("/media").Subrouter()
+func RegisterMediaRoutes(r *barf.SubRoute) {
+	router := r.RetroFrame("/media")
 
-	router.Handle("/upload", middleware.ValidateAuth(media.UploadMedia)).Methods("POST")
+	router.Post("/upload",media.UploadMedia, middleware.ValidateAuth)
 }

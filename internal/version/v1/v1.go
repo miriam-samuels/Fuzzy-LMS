@@ -1,16 +1,16 @@
 package v1
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/miriam-samuels/loan-management-backend/internal/routes/auth"
 	"github.com/miriam-samuels/loan-management-backend/internal/routes/loan"
 	"github.com/miriam-samuels/loan-management-backend/internal/routes/media"
 	"github.com/miriam-samuels/loan-management-backend/internal/routes/user"
+	"github.com/opensaucerer/barf"
 )
 
-func Routes(router *mux.Router) {
+func Routes() {
 	// handle versioning
-	r := router.PathPrefix("/v1").Subrouter()
+	r := barf.RetroFrame("/v1")
 
 	// Register routes
 	auth.RegisterAuthRoutes(r)

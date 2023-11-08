@@ -12,6 +12,7 @@ import (
 )
 
 func UserSignUp(w http.ResponseWriter, r *http.Request) {
+	
 	cred := &types.SignUpCred{}
 	helper.ParseRequestBody(w, r, cred)
 

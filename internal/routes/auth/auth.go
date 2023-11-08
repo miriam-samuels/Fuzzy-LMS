@@ -1,13 +1,13 @@
 package auth
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/miriam-samuels/loan-management-backend/internal/controllers/auth"
+	"github.com/opensaucerer/barf"
 )
 
-func RegisterAuthRoutes(r *mux.Router) {
-	router := r.PathPrefix("/auth").Subrouter()
+func RegisterAuthRoutes(r *barf.SubRoute) {
+	router := r.RetroFrame("/auth")
 
-	router.HandleFunc("/signup", auth.UserSignUp).Methods("POST")
-	router.HandleFunc("/signin", auth.UserSignIn).Methods("POST")
+	router.Post("/signup", auth.UserSignUp)
+	router.Post("/signin", auth.UserSignIn)
 }

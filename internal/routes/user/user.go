@@ -1,14 +1,14 @@
 package user
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/miriam-samuels/loan-management-backend/internal/controllers/user"
 	"github.com/miriam-samuels/loan-management-backend/internal/middleware"
+	"github.com/opensaucerer/barf"
 )
 
-func RegisterUserRoutes(r *mux.Router) {
-	router := r.PathPrefix("/user").Subrouter()
+func RegisterUserRoutes(r *barf.SubRoute) {
+	router := r.RetroFrame("/user")
 
-	router.Handle("/profile/me", middleware.ValidateAuth(user.GetProfile)).Methods("GET")
-	router.Handle("/profile", middleware.ValidateAuth(user.UpdateProfile)).Methods("PATCH")
+	router.Get("/profile/me", user.GetProfile, middleware.ValidateAuth)
+	router.Post("/profile", user.UpdateProfile, middleware.ValidateAuth)
 }
