@@ -5,14 +5,12 @@ import (
 
 	"github.com/miriam-samuels/loan-management-backend/internal/database"
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
-	"github.com/miriam-samuels/loan-management-backend/internal/types"
+	"github.com/miriam-samuels/loan-management-backend/internal/model/v1/user"
 
 	"github.com/lib/pq"
 )
 
 func GetProfile(w http.ResponseWriter, r *http.Request) {
-	// variable to store user details
-	var user types.User
 
 	// get id of user making request
 	userId := r.Context().Value("userId").(string)
@@ -22,11 +20,10 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 
 	if userRole == "borrower" {
 		// variable to store borrower details
-		var brw types.Borrower
+		var brw user.Borrower
 		var kin []byte
 		var guarantor []byte
 		var offences []byte
-		var collateral []byte
 		var loanIds []byte
 
 		row := database.LoanDb.QueryRow("SELECT * FROM borrowers WHERE id = $1", userId)
@@ -50,9 +47,6 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			&brw.HasCriminalRec,
 			&offences,
 			&brw.JailTime,
-			&brw.HasCollateral,
-			&collateral,
-			&brw.CollateralDoc,
 			&kin,
 			&guarantor,
 			&brw.NinSlip,
@@ -73,6 +67,8 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		helper.SendJSONResponse(w, http.StatusOK, true, "Successfully fetched user profile", res)
 	} else {
+		// variable to store user details
+		var user user.User
 		// get user from db
 		row := database.LoanDb.QueryRow("SELECT id, firstname, lastname, email, role FROM users WHERE id = $1", userId)
 		err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Role)
@@ -96,7 +92,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	// get role of user making request
 	userRole := r.Context().Value("userRole").(string)
 
-	var user types.Borrower
+	var user user.Borrower
 
 	// parse request body into user
 	helper.ParseRequestBody(w, r, &user)
@@ -108,14 +104,34 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 
 		defer stmt.Close()
 
-		_, err := stmt.Exec(user.Phone, user.BirthDate, user.Gender, user.Nationality, user.StateOrigin,
-			user.Address, user.Passport, user.Signature, user.Job, user.JobTerm, user.Income, user.Deck, user.HasCriminalRec,
-			pq.Array(user.Offences), user.JailTime, user.HasCollateral, pq.Array(user.Collateral),
-			user.CollateralDoc, pq.Array(user.Kin), pq.Array(user.Guarantor),
-			user.NinSlip, user.Nin, user.Bvn, user.BankName, user.AccountNumber,
-			user.Identification, pq.Array(user.LoanIds), user.Progress, userId)
+		_, err := stmt.Exec(
+			user.Phone,
+			user.BirthDate,
+			user.Gender,
+			user.Nationality,
+			user.StateOrigin,
+			user.Address,
+			user.Passport,
+			user.Signature,
+			user.Job,
+			user.JobTerm,
+			user.Income,
+			user.Deck,
+			user.HasCriminalRec,
+			pq.Array(user.Offences),
+			user.JailTime,
+			pq.Array(user.Kin),
+			pq.Array(user.Guarantor),
+			user.NinSlip,
+			user.Nin,
+			user.Bvn,
+			user.BankName,
+			user.AccountNumber,
+			user.Identification,
+			pq.Array(user.LoanIds),
+			user.Progress, userId)
 		if err != nil {
-			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
+			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db"+err.Error(), nil)
 			return
 		}
 		// Form response object
