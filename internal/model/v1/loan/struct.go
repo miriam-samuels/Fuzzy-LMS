@@ -10,6 +10,6 @@ type Loan struct {
 	Purpose       string `json:"purpose"`
 	HasCollateral bool   `json:"has_collateral"`
 	Collateral    string `json:"collateral"`
-	CollateralDoc string `json:"collateral_docs"`
+	CollateralDocs string `json:"collateral_docs"`
 	Status        string `json:"status"`
 }

@@ -42,7 +42,7 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 		loanApp.Purpose,
 		loanApp.HasCollateral,
 		loanApp.Collateral,
-		loanApp.CollateralDoc,
+		loanApp.CollateralDocs,
 		loanApp.Status,
 	)
 	if err != nil {
@@ -97,7 +97,7 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	// process query
 	for rows.Next() {
 		var loan loan.Loan
-		err := rows.Scan(&loan.LoanID, &loan.ID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status, &loan.HasCollateral, &loan.Collateral, &loan.CollateralDoc)
+		err := rows.Scan(&loan.LoanID, &loan.ID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status, &loan.HasCollateral, &loan.Collateral, &loan.CollateralDocs)
 		if err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error getting loans", nil, err)
 			return
