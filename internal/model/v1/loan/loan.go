@@ -10,7 +10,7 @@ import (
 
 func (loanApp *Loan) CreateLoan(id uuid.UUID, loanId string, borrowerId string, w http.ResponseWriter) (*sql.Stmt, error) {
 	//  prepare query statement to create loan application in db
-	stmt, err := database.LoanDb.Prepare("INSERT INTO applications (id,loanId, borrowerId,type,term,amount,purpose, has_collateral, collateral, collateral_doc, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)")
+	stmt, err := database.LoanDb.Prepare("INSERT INTO applications (id,loanId, borrowerId,type,term,amount,purpose, has_collateral, collateral, collateral_docs, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)")
 	return stmt, err
 }
 
