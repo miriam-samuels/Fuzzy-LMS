@@ -2,12 +2,13 @@ package helper
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
-func SendJSONResponse(w http.ResponseWriter, statusCode int, status bool, message string, data map[string]interface{}) {
+func SendResponse(w http.ResponseWriter, statusCode int, status bool, message string, data map[string]interface{}, err ...error) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Authorization")
@@ -18,4 +19,8 @@ func SendJSONResponse(w http.ResponseWriter, statusCode int, status bool, messag
 		Message: message,
 		Data:    data,
 	})
+
+	if status == false && len(err) > 0 {
+		log.Println(err[0].Error())
+	}
 }

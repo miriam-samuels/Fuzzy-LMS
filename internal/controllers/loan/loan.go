@@ -1,19 +1,15 @@
 package loan
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/miriam-samuels/loan-management-backend/internal/database"
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
-	"github.com/miriam-samuels/loan-management-backend/internal/types"
+	"github.com/miriam-samuels/loan-management-backend/internal/model/v1/loan"
 )
 
 // logic to create a new Loan Application goes here
 func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
-	loanApp := &types.Loan{}
+	loanApp := &loan.Loan{}
 	helper.ParseRequestBody(w, r, loanApp)
 
 	// TODO: Validate request body
@@ -27,15 +23,30 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	// get borrower id from request context
 	borrowerId := r.Context().Value("userId").(string)
 
-	//  prepare query statement to create loan application in db
-	stmt := helper.Prepare("INSERT INTO applications (id,loanId, borrowerId,type,term,amount,purpose) VALUES ($1, $2, $3, $4, $5, $6, $7)", w)
+	// create loan application
+	stmt, err := loanApp.CreateLoan(id, loanId, borrowerId, w)
+	if err != nil {
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+		return
+	}
 
 	defer stmt.Close()
 
-	result, err := stmt.Exec(id, loanId, borrowerId, loanApp.Type, loanApp.Term, loanApp.Amount, loanApp.Purpose)
+	_, err = stmt.Exec(
+		id,
+		loanId,
+		borrowerId,
+		loanApp.Type,
+		loanApp.Term,
+		loanApp.Amount,
+		loanApp.Purpose,
+		loanApp.HasCollateral,
+		loanApp.Collateral,
+		loanApp.CollateralDocs,
+		loanApp.Status,
+	)
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error saving to db", nil)
-		fmt.Printf("ERROR:: %v", err)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
 		return
 	}
 
@@ -45,8 +56,8 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 		"loanId": loanId,
 		"data":   loanApp,
 	}
-	helper.SendJSONResponse(w, http.StatusOK, true, "Loan application successfully created", res)
-	log.Println(result)
+	helper.SendResponse(w, http.StatusOK, true, "Loan application successfully created", res)
+
 }
 
 func GetLoans(w http.ResponseWriter, r *http.Request) {
@@ -74,27 +85,21 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 		statusCondition = ""
 	}
 
-	var rows *sql.Rows
-	var err error
-	if userRole == "borrower" {
-		rows, err = database.LoanDb.Query("SELECT * FROM applications WHERE borrowerId = $1"+statusCondition, userId)
-	} else if userRole == "lender" {
-		rows, err = database.LoanDb.Query("SELECT * FROM applications" + statusCondition)
-	}
-
+	// get loans
+	rows, err := loan.GetLoans(userId, userRole, statusCondition, w)
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
 		return
 	}
 
 	// slice to store all loan applications
-	var loans []types.Loan
+	var loans []loan.Loan
 	// process query
 	for rows.Next() {
-		var loan types.Loan
-		err := rows.Scan(&loan.LoanID, &loan.ID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status)
+		var loan loan.Loan
+		err := rows.Scan(&loan.LoanID, &loan.ID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status, &loan.HasCollateral, &loan.CollateralDocs, &loan.Collateral)
 		if err != nil {
-			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting loans", nil)
+			helper.SendResponse(w, http.StatusInternalServerError, false, "error getting loans", nil, err)
 			return
 		}
 
@@ -105,5 +110,5 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	res := map[string]interface{}{
 		"loans": loans,
 	}
-	helper.SendJSONResponse(w, http.StatusOK, true, "Loan application successfully created", res)
+	helper.SendResponse(w, http.StatusOK, true, "Loan application successfully created", res)
 }

@@ -13,7 +13,7 @@ func ParseRequestBody(w http.ResponseWriter, r *http.Request, i interface{}) err
 	if err != nil {
 		if err.Error() != "EOF" {
 			// send response on unable to parse body
-			SendJSONResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
+			SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
 			return err
 		}
 	}
@@ -24,13 +24,13 @@ func ParseMultipartRequestBody(w http.ResponseWriter, r *http.Request) (multipar
 	//  PARSE formdata including uploaded file
 	err := r.ParseMultipartForm(10 << 20) // 10mb limit
 	if err != nil {
-		SendJSONResponse(w, http.StatusBadRequest, false, "error parsing body:", nil)
+		SendResponse(w, http.StatusBadRequest, false, "error parsing body:", nil)
 		return nil, err
 	}
 
 	f, _, err := r.FormFile("file")
 	if err != nil {
-		SendJSONResponse(w, http.StatusBadRequest, false, "Unable to retrieve file from form", nil)
+		SendResponse(w, http.StatusBadRequest, false, "Unable to retrieve file from form", nil)
 		return nil, err
 	}
 	return f, err
