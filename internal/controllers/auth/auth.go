@@ -4,7 +4,6 @@ import (
 	// "fmt"
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
@@ -19,18 +18,22 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	// TODO: Validate request body
 
 	// check if user already exists
-	var exists bool
-	cred.CheckUser(&exists, w)
+	exists, err := cred.CheckUser(w)
+	if err != sql.ErrNoRows {
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered", nil, err)
+		return
+	}
+
+	// send response that user exists
 	if exists {
-		helper.SendJSONResponse(w, http.StatusBadRequest, false, "user exist", nil)
+		helper.SendResponse(w, http.StatusBadRequest, false, "user exist", nil)
 		return
 	}
 
 	// encrypt user password
 	encryptedPass, err := helper.Encrypt(cred.Password)
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error occured"+err.Error(), nil)
-		log.Fatal(err)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error occured", nil, err)
 		return
 	}
 
@@ -40,18 +43,45 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	// generate session token
 	token, err := helper.SignJWT(userId.String(), cred.Role)
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil)
-		fmt.Printf("Could not generate token for user:: %v", err)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil, err)
 		return
 	}
 
 	// Insert user into db
-	cred.CreateUser(userId, encryptedPass, w)
-	
-	//  check if the user is a borrower then insert into the borrowes table
-	if cred.Role == "borrower" {
-		cred.CreateBorrower(userId, w)
+	stmt, err := cred.CreateUser(userId, encryptedPass, w)
+	if err != nil {
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+		return
 	}
+
+	defer stmt.Close()
+
+	//execute statement
+	_, err = stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email, encryptedPass, cred.Role)
+	if err != nil {
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+		return
+	}
+
+	//  check if the user is a borrower
+	if cred.Role == "borrower" {
+		//insert into the borrowes table
+		stmt, err := cred.CreateBorrower(userId, w)
+		if err != nil {
+			helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+			return
+		}
+
+		defer stmt.Close()
+
+		//execute statement
+		_, err = stmt.Exec(userId, cred.FirstName, cred.LastName, cred.Email)
+		if err != nil {
+			helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+			return
+		}
+	}
+
 	// Form response object
 	res := map[string]interface{}{
 		"token":     token,
@@ -61,8 +91,8 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 		"email":     cred.Email,
 		"role":      cred.Role,
 	}
-	helper.SendJSONResponse(w, http.StatusOK, true, "user signup successful", res)
 
+	helper.SendResponse(w, http.StatusOK, true, "user signup successful", res)
 }
 
 func UserSignIn(w http.ResponseWriter, r *http.Request) {
@@ -83,18 +113,19 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// send response that user does not exist
-			helper.SendJSONResponse(w, http.StatusBadRequest, false, "user does not exist", nil)
+			helper.SendResponse(w, http.StatusBadRequest, false, "user does not exist", nil)
 			return
 		}
 		// if unknow error
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting user", nil)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error getting user", nil)
 		fmt.Printf("error getting user %v", err)
 		return
 	}
+
 	// confirm user password is correct
 	err = helper.CompareHashAndString(passwordHash, cred.Password)
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusBadRequest, false, "incorrect password", nil)
+		helper.SendResponse(w, http.StatusBadRequest, false, "incorrect password", nil)
 		fmt.Printf("incorrect password: %v", err)
 		return
 	}
@@ -102,7 +133,7 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	// generate session token
 	token, err := helper.SignJWT(user.ID, user.Role)
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "unable to generate sesson", nil)
 		fmt.Printf("error generating token %v", err)
 		return
 	}
@@ -112,5 +143,5 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 		"user":  user,
 	}
 
-	helper.SendJSONResponse(w, http.StatusOK, true, "user login successful", res)
+	helper.SendResponse(w, http.StatusOK, true, "user login successful", res)
 }

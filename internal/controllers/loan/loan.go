@@ -24,7 +24,31 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	borrowerId := r.Context().Value("userId").(string)
 
 	// create loan application
-	loanApp.CreateLoan(id, loanId, borrowerId, w)
+	stmt, err := loanApp.CreateLoan(id, loanId, borrowerId, w)
+	if err != nil {
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+		return
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(
+		id,
+		loanId,
+		borrowerId,
+		loanApp.Type,
+		loanApp.Term,
+		loanApp.Amount,
+		loanApp.Purpose,
+		loanApp.HasCollateral,
+		loanApp.Collateral,
+		loanApp.CollateralDoc,
+		loanApp.Status,
+	)
+	if err != nil {
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+		return
+	}
 
 	// Form response object
 	res := map[string]interface{}{
@@ -32,7 +56,7 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 		"loanId": loanId,
 		"data":   loanApp,
 	}
-	helper.SendJSONResponse(w, http.StatusOK, true, "Loan application successfully created", res)
+	helper.SendResponse(w, http.StatusOK, true, "Loan application successfully created", res)
 
 }
 
@@ -64,7 +88,7 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	// get loans
 	rows, err := loan.GetLoans(userId, userRole, statusCondition, w)
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
 		return
 	}
 
@@ -73,9 +97,9 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	// process query
 	for rows.Next() {
 		var loan loan.Loan
-		err := rows.Scan(&loan.LoanID, &loan.ID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.HasCollateral, &loan.Collateral, &loan.CollateralDoc, &loan.Status)
+		err := rows.Scan(&loan.LoanID, &loan.ID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status, &loan.HasCollateral, &loan.Collateral, &loan.CollateralDoc)
 		if err != nil {
-			helper.SendJSONResponse(w, http.StatusInternalServerError, false, "error getting loans", nil)
+			helper.SendResponse(w, http.StatusInternalServerError, false, "error getting loans", nil, err)
 			return
 		}
 
@@ -86,5 +110,5 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	res := map[string]interface{}{
 		"loans": loans,
 	}
-	helper.SendJSONResponse(w, http.StatusOK, true, "Loan application successfully created", res)
+	helper.SendResponse(w, http.StatusOK, true, "Loan application successfully created", res)
 }

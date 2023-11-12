@@ -17,7 +17,7 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			// send respose that user is not authorized
-			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "missing authoriztion", nil)
+			helper.SendResponse(w, http.StatusUnauthorized, false, "missing authoriztion", nil)
 			return
 		}
 
@@ -27,14 +27,14 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 		// Check if auth header has a lenght of 2 after spilting
 		if len(authHeaderSplit) != 2 {
 			// send response on invalid auth header
-			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "invalid auth header", nil)
+			helper.SendResponse(w, http.StatusUnauthorized, false, "invalid auth header", nil)
 			return
 		}
 
 		// check if auth type is bearer
 		if authHeaderSplit[0] != "Bearer" {
 			//	invalid auth type
-			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "invalid auth type expecting Bearer", nil)
+			helper.SendResponse(w, http.StatusUnauthorized, false, "invalid auth type expecting Bearer", nil)
 			return
 		}
 
@@ -42,7 +42,7 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 		token := authHeaderSplit[1]
 		if token == "" {
 			// send response on user not logged in
-			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "user not logged in, invalid token", nil)
+			helper.SendResponse(w, http.StatusUnauthorized, false, "user not logged in, invalid token", nil)
 			return
 		}
 
@@ -55,7 +55,7 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 			claim, valid := helper.VerifyJWT(token)
 			if !valid {
 				// TODO: send response on invalid token provided
-				helper.SendJSONResponse(w, http.StatusUnauthorized, false, "invalid token", nil)
+				helper.SendResponse(w, http.StatusUnauthorized, false, "invalid token", nil)
 				return
 			}
 
