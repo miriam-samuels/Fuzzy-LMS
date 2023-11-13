@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
@@ -22,8 +23,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		var brw user.Borrower
 		var kin []byte
 		var guarantor []byte
-		var offences []byte
-		var loanIds []byte
+
 		brw.ID = userId
 
 		row := brw.FindBorrowerById()
@@ -45,7 +45,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			&brw.Income,
 			&brw.Deck,
 			&brw.HasCriminalRec,
-			&offences,
+			pq.Array(&brw.Offences),
 			&brw.JailTime,
 			&kin,
 			&guarantor,
@@ -55,9 +55,21 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			&brw.BankName,
 			&brw.AccountNumber,
 			&brw.Identification,
-			&loanIds,
+			pq.Array(&brw.LoanIds),
 			&brw.Progress)
 		if err != nil {
+			helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
+			return
+		}
+
+		// Unmarshal kin JSON data into structs
+		if err := json.Unmarshal(kin, &brw.Kin); err != nil {
+			helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
+			return
+		}
+
+		// Unmarshal guarantor JSON data into structs
+		if err := json.Unmarshal(guarantor, &brw.Guarantor); err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
 			return
 		}
@@ -79,6 +91,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		//form repsonse object
 		res := map[string]interface{}{
 			"user": user,
 		}
@@ -99,6 +112,18 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 
 		// parse request body into user
 		helper.ParseRequestBody(w, r, &user)
+
+		// convert struct to json for kin
+		kinJSON, err := json.Marshal(user.Kin)
+		if err != nil {
+			return
+		}
+
+		// convert struct to json for gurantor
+		GuarantorJSON, err := json.Marshal(user.Guarantor)
+		if err != nil {
+			return
+		}
 
 		stmt, err := user.UpdateBorrower()
 		if err != nil {
@@ -122,24 +147,26 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 			user.Income,
 			user.Deck,
 			user.HasCriminalRec,
-			pq.Array(user.Offences),
+			pq.Array(user.Offences), //concatenate struct to string seperated by comma
 			user.JailTime,
-			pq.Array(user.Kin),
-			pq.Array(user.Guarantor),
+			kinJSON,
+			GuarantorJSON,
 			user.NinSlip,
 			user.Nin,
 			user.Bvn,
 			user.BankName,
 			user.AccountNumber,
 			user.Identification,
-			pq.Array(user.LoanIds),
 			user.Progress, userId)
 		if err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db"+err.Error(), nil)
 			return
 		}
 		// Form response object
-		helper.SendResponse(w, http.StatusOK, true, "User successfully updated", nil)
+		res := map[string]interface{}{
+			"user": user,
+		}
+		helper.SendResponse(w, http.StatusOK, true, "User successfully updated", res)
 	}
 
 }
