@@ -15,6 +15,7 @@ func ParseRequestBody(w http.ResponseWriter, r *http.Request, i interface{}) err
 			SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
 			return err
 		}
+		return err
 	}
 	return nil
 }

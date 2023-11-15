@@ -11,7 +11,7 @@ import (
 // method to check if user exists in the db
 func (cred *SignUpCred) CheckUser(w http.ResponseWriter) (bool, error) {
 	// TODO: Fix error when user does exist
-	var exists bool
+	var exists bool 
 	err := database.LoanDb.QueryRow("SELECT 1 FROM users WHERE email=$1", cred.Email).Scan(&exists)
 	if err != nil {
 		return false, err

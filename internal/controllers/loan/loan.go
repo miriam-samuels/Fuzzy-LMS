@@ -10,7 +10,11 @@ import (
 // logic to create a new Loan Application goes here
 func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	loanApp := &loan.Loan{}
-	helper.ParseRequestBody(w, r, loanApp)
+
+	err := helper.ParseRequestBody(w, r, loanApp)
+	if err != nil {
+		return
+	}
 
 	// TODO: Validate request body
 

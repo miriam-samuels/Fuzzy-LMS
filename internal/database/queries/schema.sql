@@ -33,7 +33,6 @@ CREATE TABLE borrowers (
     collateral_docs text default '',
     kin JSONB DEFAULT '{}', 
     guarantor JSONB DEFAULT '{}',
-    nin_slip text default '',
     nin text default '',
     bvn text default '',
     bank_name text default '',

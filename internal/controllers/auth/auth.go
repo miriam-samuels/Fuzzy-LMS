@@ -18,7 +18,7 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	// TODO: Validate request body
 
 	// check if user already exists
-	exists, err := cred.CheckUser(w)
+	exists, err := cred.CheckUser(w) 
 	if err != sql.ErrNoRows {
 		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered", nil, err)
 		return

@@ -7,7 +7,7 @@ type SignUpCred struct {
 	Password  string `json:"password,omitempty"`
 	Role      string `json:"role"`
 }
-
+ 
 type SignInCred struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
