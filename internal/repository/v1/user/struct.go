@@ -1,4 +1,4 @@
-package types
+package user
 
 type User struct {
 	ID        string `json:"id"`
@@ -28,16 +28,12 @@ type Borrower struct {
 	HasCriminalRec bool        `json:"has_criminal_record"`
 	Offences       []string    `json:"offences"`
 	JailTime       uint8       `json:"jail_time"`
-	HasCollateral  bool        `json:"has_collateral"`
-	Collateral     []string    `json:"collateral"`
-	CollateralDoc  string      `json:"collateral_docs"`
 	Kin            []NextOfKin `json:"kin"`
 	Guarantor      []Guarantor `json:"guarantor"`
-	NinSlip        string      `json:"nin_slip"`
 	Nin            string      `json:"nin"`
 	Bvn            string      `json:"bvn"`
 	BankName       string      `json:"bank_name"`
-	AccountNumber  string      `json:"account"`
+	AccountNumber  string      `json:"account_number"`
 	Identification string      `json:"identification"`
 	LoanIds        []string    `json:"loan_ids"`
 	Progress			uint8			`json:"progress"`

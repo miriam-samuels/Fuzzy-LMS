@@ -1,7 +1,7 @@
 package media
 
 import (
-	"github.com/miriam-samuels/loan-management-backend/internal/controllers/media"
+	"github.com/miriam-samuels/loan-management-backend/internal/controller/media"
 	"github.com/miriam-samuels/loan-management-backend/internal/middleware"
 	"github.com/opensaucerer/barf"
 )

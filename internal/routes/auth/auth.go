@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/miriam-samuels/loan-management-backend/internal/controllers/auth"
+	"github.com/miriam-samuels/loan-management-backend/internal/controller/auth"
 	"github.com/opensaucerer/barf"
 )
 

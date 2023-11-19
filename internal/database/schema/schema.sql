@@ -33,11 +33,10 @@ CREATE TABLE borrowers (
     collateral_docs text default '',
     kin JSONB DEFAULT '{}', 
     guarantor JSONB DEFAULT '{}',
-    nin_slip text default '',
     nin text default '',
     bvn text default '',
     bank_name text default '',
-    account text default '',
+    account_number text default '',
     identification text default '',
     loan_ids TEXT[] DEFAULT '{}'
 );
@@ -48,7 +47,7 @@ CREATE TABLE applications (
    borrowerid text not null,
 	term varchar(20) not null,
 	type varchar(45) not null,
-	amount varchar(45) not null,
+	amount float not null,
 	purpose text default '',
    status varchar(15) default 'pending'
 );

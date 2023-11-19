@@ -49,6 +49,7 @@ func main() {
 	// register routes with versioning
 	v1.Routes()
 
+
 	//  Defer connection to db close
 	defer database.LoanDb.Close()
 

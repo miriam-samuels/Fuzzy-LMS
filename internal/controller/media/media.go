@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
 	"github.com/miriam-samuels/loan-management-backend/internal/storage"
 )
@@ -23,20 +24,20 @@ func UploadMedia(w http.ResponseWriter, r *http.Request) {
 
 	_, err := io.Copy(wc, file)
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "Unable to upload file to storage", nil)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "Unable to upload file to storage", nil)
 		return
 	}
 
 	// close writer
 	if err := wc.Close(); err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "Unable to close storage writer"+err.Error(), nil)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "Unable to close storage writer"+err.Error(), nil)
 		return
 	}
 
 	// Generate a download URL for the uploaded file
 	downloadURL, err := media.Attrs(context.Background())
 	if err != nil {
-		helper.SendJSONResponse(w, http.StatusInternalServerError, false, "Unable to get download URL"+err.Error(), nil)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "Unable to get download URL"+err.Error(), nil)
 		return
 	}
 
@@ -44,6 +45,6 @@ func UploadMedia(w http.ResponseWriter, r *http.Request) {
 	res := map[string]interface{}{
 		"url": downloadURL.MediaLink,
 	}
-	helper.SendJSONResponse(w, http.StatusOK, true, "Media Uploaded Successfully", res)
+	helper.SendResponse(w, http.StatusOK, true, "Media Uploaded Successfully", res)
 
 }

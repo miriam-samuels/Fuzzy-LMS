@@ -1,7 +1,7 @@
 package loan
 
 import (
-	"github.com/miriam-samuels/loan-management-backend/internal/controllers/loan"
+	"github.com/miriam-samuels/loan-management-backend/internal/controller/loan"
 	"github.com/miriam-samuels/loan-management-backend/internal/middleware"
 	"github.com/opensaucerer/barf"
 )

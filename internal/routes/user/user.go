@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/miriam-samuels/loan-management-backend/internal/controllers/user"
+	"github.com/miriam-samuels/loan-management-backend/internal/controller/user"
 	"github.com/miriam-samuels/loan-management-backend/internal/middleware"
 	"github.com/opensaucerer/barf"
 )

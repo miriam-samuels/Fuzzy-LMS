@@ -17,7 +17,7 @@ func ValidateAuth(nextHandler http.Handler) http.Handler {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			// send respose that user is not authorized
-			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "missing authoriztion", nil)
+			helper.SendResponse(w, http.StatusUnauthorized, false, "missing authoriztion", nil)
 			return
 		}
 
@@ -27,14 +27,14 @@ func ValidateAuth(nextHandler http.Handler) http.Handler {
 		// Check if auth header has a lenght of 2 after spilting
 		if len(authHeaderSplit) != 2 {
 			// send response on invalid auth header
-			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "invalid auth header", nil)
+			helper.SendResponse(w, http.StatusUnauthorized, false, "invalid auth header", nil)
 			return
 		}
 
 		// check if auth type is bearer
 		if authHeaderSplit[0] != "Bearer" {
 			//	invalid auth type
-			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "invalid auth type expecting Bearer", nil)
+			helper.SendResponse(w, http.StatusUnauthorized, false, "invalid auth type expecting Bearer", nil)
 			return
 		}
 
@@ -42,7 +42,7 @@ func ValidateAuth(nextHandler http.Handler) http.Handler {
 		token := authHeaderSplit[1]
 		if token == "" {
 			// send response on user not logged in
-			helper.SendJSONResponse(w, http.StatusUnauthorized, false, "user not logged in, invalid token", nil)
+			helper.SendResponse(w, http.StatusUnauthorized, false, "user not logged in, invalid token", nil)
 			return
 		}
 
@@ -55,7 +55,7 @@ func ValidateAuth(nextHandler http.Handler) http.Handler {
 			claim, valid := helper.VerifyJWT(token)
 			if !valid {
 				// TODO: send response on invalid token provided
-				helper.SendJSONResponse(w, http.StatusUnauthorized, false, "invalid token", nil)
+				helper.SendResponse(w, http.StatusUnauthorized, false, "invalid token", nil)
 				return
 			}
 
@@ -77,6 +77,8 @@ func ValidateAuth(nextHandler http.Handler) http.Handler {
 
 // This function takes in an interface for the request and returns a function which takes in a handler function and returns a handler
 // TODO: Learn the right way to use a middleware for parsing
+// method implemented on an interface
+// takes in a handler function  and returns a handler 
 // func ParseRequest(i interface{}) func(func(http.ResponseWriter, *http.Request)) http.Handler {
 // 	return func(nextHandler func(http.ResponseWriter, *http.Request)) http.Handler {
 // 		// anonymous function using handlerfunc returns a handler
