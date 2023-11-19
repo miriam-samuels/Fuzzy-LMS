@@ -7,9 +7,6 @@ toolchain go1.21.3
 require (
 	cloud.google.com/go/storage v1.34.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
-	github.com/gorilla/mux v1.8.0
-	github.com/joho/godotenv v1.5.1
-	github.com/rs/cors v1.10.1
 	google.golang.org/api v0.149.0
 )
 
@@ -45,5 +42,6 @@ require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/google/uuid v1.4.0
 	github.com/lib/pq v1.10.9
+	github.com/opensaucerer/barf v1.0.8
 	golang.org/x/crypto v0.14.0
 )

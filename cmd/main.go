@@ -1,18 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
-	"os"
-	"time"
-
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
+	"github.com/miriam-samuels/loan-management-backend/internal/constants"
 	"github.com/miriam-samuels/loan-management-backend/internal/database"
 	"github.com/miriam-samuels/loan-management-backend/internal/storage"
 	v1 "github.com/miriam-samuels/loan-management-backend/internal/version/v1"
-	"github.com/rs/cors"
+	"github.com/opensaucerer/barf"
 )
 
 // connection port and host for local environment
@@ -22,13 +16,12 @@ const (
 
 func init() {
 	// Find .env file
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
+	if err := barf.Env(constants.Env, ".env"); err != nil {
+		barf.Logger().Fatal(err.Error())
 	}
 
 	// Connect Database
-	client, err := database.NewPostgresClient(os.Getenv("LOAN_DB_DATASOURCE_URI"))
+	client, err := database.NewPostgresClient(constants.Env.LoanDbDatasourceUri)
 	if err != nil {
 		log.Fatal("error connecting to database :: ", err)
 	}
@@ -37,7 +30,7 @@ func init() {
 	database.LoanDb = client
 
 	// Connect to Storage Bucket
-	bucket, err := storage.NewFirebaseBucket("serviceAccountKey.json", os.Getenv("STORAGE_BUCKET"))
+	bucket, err := storage.NewFirebaseBucket("serviceAccountKey.json", constants.Env.StorageBucket)
 	if err != nil {
 		log.Fatal("error getting storage bucket ::", err)
 	}
@@ -47,43 +40,39 @@ func init() {
 
 func main() {
 	// Get port if it exists in env file
-	port := os.Getenv("PORT")
+	port := constants.Env.ConnectionPort
 	// check if port exists in env file else use constant
 	if port == "" {
 		port = CONN_PORT
 	}
 
-	// create new router
-	router := mux.NewRouter().StrictSlash(true)
-
 	// register routes with versioning
-	v1.Routes(router)
+	v1.Routes()
 
 
 	//  Defer connection to db close
 	defer database.LoanDb.Close()
 
-	//  cross origin
-	handler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-		AllowedHeaders:   []string{"Authorization", "Content-Type"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "OPTIONS"},
-		// Debug:            true,
-	}).Handler(router)
-
-	// add more configurations to server
-	server := http.Server{
-		Addr:         ":" + port,
-		Handler:      handler,
-		ReadTimeout:  time.Second * 30,
-		WriteTimeout: time.Second * 30,
+	if err := barf.Stark(barf.Augment{
+		Host: "",
+		Port:         port,
+		Logging:      barf.Allow(), // enable request logging
+		Recovery:     barf.Allow(), // enable panic recovery so barf returns a 500 error instead of crashing
+		ReadTimeout:  30,
+		WriteTimeout: 30,
+		CORS: &barf.CORS{
+			AllowedOrigins:   []string{"*"},
+			AllowCredentials: true,
+			AllowedHeaders:   []string{"Authorization", "Content-Type"},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "OPTIONS"},
+		},
+	}); err != nil {
+		barf.Logger().Fatal(err.Error())
 	}
 
-	// start server
-	fmt.Println("starting server on port :: " + port)
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
+	// create & start server
+	if err := barf.Beck(); err != nil {
+		// barf exposes a logger instance
+		barf.Logger().Fatal(err.Error())
 	}
 }

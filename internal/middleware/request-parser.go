@@ -10,7 +10,7 @@ import (
 )
 
 // function to validate user authorization
-func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
+func ValidateAuth(nextHandler http.Handler) http.Handler {
 	// returns a handler function which calls the next handler
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// get authorization header
@@ -70,7 +70,7 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 
 		r = r.WithContext(ctx)
 
-		// call nect handler
+		// call next handler
 		nextHandler.ServeHTTP(w, r)
 	})
 }
