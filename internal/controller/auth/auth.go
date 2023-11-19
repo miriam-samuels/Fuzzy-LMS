@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
-	"github.com/miriam-samuels/loan-management-backend/internal/model/v1/auth"
-	"github.com/miriam-samuels/loan-management-backend/internal/model/v1/user"
+	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/auth"
+	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/user"
 )
 
 func UserSignUp(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +18,7 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	// TODO: Validate request body
 
 	// check if user already exists
-	exists, err := cred.CheckUser(w) 
+	exists, err := cred.CheckUser(w)
 	if err != sql.ErrNoRows {
 		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered", nil, err)
 		return

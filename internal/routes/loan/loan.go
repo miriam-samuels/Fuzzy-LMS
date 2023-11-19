@@ -2,7 +2,7 @@ package loan
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/miriam-samuels/loan-management-backend/internal/controllers/loan"
+	"github.com/miriam-samuels/loan-management-backend/internal/controller/loan"
 	"github.com/miriam-samuels/loan-management-backend/internal/middleware"
 )
 

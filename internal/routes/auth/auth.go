@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/miriam-samuels/loan-management-backend/internal/controllers/auth"
+	"github.com/miriam-samuels/loan-management-backend/internal/controller/auth"
 )
 
 func RegisterAuthRoutes(r *mux.Router) {
@@ -11,4 +11,3 @@ func RegisterAuthRoutes(r *mux.Router) {
 	router.HandleFunc("/signup", auth.UserSignUp).Methods("POST")
 	router.HandleFunc("/signin", auth.UserSignIn).Methods("POST")
 }
- 

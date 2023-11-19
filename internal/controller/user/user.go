@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
-	"github.com/miriam-samuels/loan-management-backend/internal/model/v1/user"
+	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/user"
 
 	"github.com/lib/pq"
 )
@@ -132,6 +132,8 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 
 		defer stmt.Close()
 
+		user.Progress = user.CalculateProgress()
+
 		_, err = stmt.Exec(
 			user.Phone,
 			user.BirthDate,
@@ -155,7 +157,8 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 			user.BankName,
 			user.AccountNumber,
 			user.Identification,
-			user.Progress, userId)
+			user.Progress,
+			userId)
 		if err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db"+err.Error(), nil)
 			return

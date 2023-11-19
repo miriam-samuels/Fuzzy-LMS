@@ -77,6 +77,8 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 
 // This function takes in an interface for the request and returns a function which takes in a handler function and returns a handler
 // TODO: Learn the right way to use a middleware for parsing
+// method implemented on an interface
+// takes in a handler function  and returns a handler 
 // func ParseRequest(i interface{}) func(func(http.ResponseWriter, *http.Request)) http.Handler {
 // 	return func(nextHandler func(http.ResponseWriter, *http.Request)) http.Handler {
 // 		// anonymous function using handlerfunc returns a handler

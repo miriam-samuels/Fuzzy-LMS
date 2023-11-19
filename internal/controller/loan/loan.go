@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
-	"github.com/miriam-samuels/loan-management-backend/internal/model/v1/loan"
+	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/loan"
 )
 
 // logic to create a new Loan Application goes here
