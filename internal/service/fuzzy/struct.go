@@ -1,5 +1,6 @@
 package service
 
+// input variables
 type CreditScore struct {
 	score uint16
 }
@@ -18,18 +19,35 @@ type Criminal struct {
 	Offences       []string
 }
 
-type Employment struct {
-	term uint8
+type LoanAmount struct {
+	amount float64
 }
 
+// input to fuzzy inference system
 type FISInput struct {
-	CreditScore    float32
-	Collateral     float32
-	Income         float32
-	CriminalRecord float32
-	EmploymentTerm float32
+	CreditScore    map[string]float64
+	Collateral     map[string]float64
+	Income         map[string]float64
+	CriminalRecord map[string]float64
+	LoanAmount map[string]float64
 }
 
+// output of fuzzy inference system
 type FISOutput struct {
-	Creditworthiness uint
+	Creditworthiness []float64
+}
+
+// fuzzy fules for inference
+type FISRules struct {
+	CreditScore      string
+	Collateral       string
+	Income           string
+	CriminalRecord   string
+	LoanAmount   string
+	Creditworthiness string
+	// operator string // currently using and operator for now
+}
+
+type DefuzzifiedOutput struct {
+	Creditworthiness string
 }

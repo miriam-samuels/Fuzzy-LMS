@@ -1,6 +1,6 @@
 package service
 
-
 type FIS interface {
-	Fuzzify() uint8
+	Fuzzify() [3]float64
+	Defuzzify() float64
 }

@@ -18,7 +18,7 @@ func calcMembershipDegree(rating float64, minValue float64, maxValue float64) fl
 }
 
 // method to fuzzify input variable income
-func (i *Income) Fuzzify() (float64, float64, float64) {
+func (i *Income) Fuzzify() map[string]float64 {
 	// var to store variable value for fuzzification
 	var rating float64
 
@@ -55,38 +55,53 @@ func (i *Income) Fuzzify() (float64, float64, float64) {
 	//get degree of membershio of rating to middle class set
 	upper = calcMembershipDegree(rating, minUpper, maxUpper)
 
-	return lower, middle, upper
+	// return the degree to which the user belarges to each linguistic variable set
+	return map[string]float64{"lower": lower, "middle": middle, "upper": upper}
 }
 
 // method to fuzzify input variable EMPLOYMENT TERM
-func (e *Employment) Fuzzify() (float64, float64, float64) {
+func (a *LoanAmount) Fuzzify() map[string]float64 {
+	// var to store variable value for fuzzification
+	var rating float64
+
 	// linguistic variables of employment period
-	var short float64
+	var small float64
 	var medium float64
-	var long float64
+	var large float64
 
 	// min and max of liguistic variables (years)
-	minShort := 0.0
-	maxShort := 9.0
+	minSmall := 0.0
+	maxSmall := 9.0
 	minMedium := 5.0
 	maxMedium := 20.0
-	minLong := 15.0
-	maxLong := 25.0
+	minLarge := 15.0
+	maxLarge := 25.0
 
-	//get degree of membershio of employment term to short employment term set
-	short = calcMembershipDegree(float64(e.term), minShort, maxShort)
+	const max float64 = 200000000 // max amount to borrow
+
+	// convert income level to scale of 0 - 10
+	// check if user earns more than max criteria
+	if a.amount >= float64(max) {
+		rating = 10 // give maximum rating
+	} else {
+		rating = (a.amount * 10) / max
+	}
+
+	//get degree of membershio of employment term to small employment term set
+	small = calcMembershipDegree(rating, minSmall, maxSmall)
 
 	//get degree of membershio of employment term to medium employment term set
-	medium = calcMembershipDegree(float64(e.term), minMedium, maxMedium)
+	medium = calcMembershipDegree(rating, minMedium, maxMedium)
 
-	//get degree of membershio of employment term to long employment term set
-	long = calcMembershipDegree(float64(e.term), minLong, maxLong)
+	//get degree of membershio of employment term to large employment term set
+	large = calcMembershipDegree(rating, minLarge, maxLarge)
 
-	return short, medium, long
+	// return the degree to which the user belarges to each linguistic variable set
+	return map[string]float64{"small": small, "medium": medium, "large": large}
 }
 
 // method to fuzzify input variable credit score
-func (c *CreditScore) Fuzzify() (float64, float64, float64) {
+func (c *CreditScore) Fuzzify() map[string]float64 {
 	// linguistic variables of credit score
 	var bad float64
 	var average float64
@@ -109,10 +124,11 @@ func (c *CreditScore) Fuzzify() (float64, float64, float64) {
 	//get degree of membershio of score to good credit score set
 	good = calcMembershipDegree(float64(c.score), minGood, maxGood)
 
-	return bad, average, good
+	// return the degree to which the user belarges to each linguistic variable set
+	return map[string]float64{"bad": bad, "average": average, "good": good}
 }
 
-func (c *Criminal) Fuzzify() (float64, float64, float64) {
+func (c *Criminal) Fuzzify() map[string]float64 {
 	// var to store variable value for fuzzification
 	var rating float64
 
@@ -122,12 +138,12 @@ func (c *Criminal) Fuzzify() (float64, float64, float64) {
 	var good float64
 
 	// min and max of liguistic variables (uisng PICO scoring system)
-	minBad := 300.0
-	maxBad := 600.0
-	minAverage := 550.0
-	maxAverage := 750.0
-	minGood := 700.0
-	maxGood := 850.0
+	minBad := 0.0
+	maxBad := 4.0
+	minAverage := 2.3
+	maxAverage := 7.0
+	minGood := 7.0
+	maxGood := 10.0
 
 	offences := map[string]float64{
 		"Homicide":                   10,
@@ -169,7 +185,8 @@ func (c *Criminal) Fuzzify() (float64, float64, float64) {
 	//get degree of membershio of score to good criminal record set
 	good = calcMembershipDegree(rating, minGood, maxGood)
 
-	return bad, average, good
+	// return the degree to which the user belarges to each linguistic variable set
+	return map[string]float64{"bad": bad, "average": average, "good": good}
 }
 
 func (brw *Collateral) Fuzzify() uint8 {

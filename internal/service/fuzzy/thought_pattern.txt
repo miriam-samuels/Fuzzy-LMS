@@ -13,16 +13,20 @@ When ploted the degree of bad to rating is decreasing in a straight line
 since it's a decreasing slope  m is negative (-m) ... m = change in y (y2-y1) / change in x(x2-x1) (rise / run)
 y intercept(y co-ordinate when x is 0 vice versa)..(x1,y1)(x2,y2)
 
+MY HEAD IS ACHING....
+
 fuck all this shit 
 
 just use the membership functions 
 
 
+INFERENCE THOUGHT PATTERN
 now we have successfully fuziffied our data
 apply fuzzy operator to input in order to aggregate them 
 
 AND methods are supported: 
 min (minimum of a,b,c,d,e) ... take the minimum of the value of the membership group
+where a,b,c,d,e are the input variables
 prod (product of x,y,z) .... multiply them
 OR methods are supported: 
 max (maximum) ... take the maximum of the value of the membership group
