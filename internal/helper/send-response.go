@@ -7,7 +7,7 @@ import (
 	"github.com/opensaucerer/barf"
 )
 
-func SendJSONResponse(w http.ResponseWriter, statusCode int, status bool, message string, data map[string]interface{}, err ...error) {
+func SendResponse(w http.ResponseWriter, statusCode int, status bool, message string, data map[string]interface{}, err ...error) {
 	barf.Response(w).Status(statusCode).JSON(barf.Res{
 		Status:  status,
 		Data:    data,

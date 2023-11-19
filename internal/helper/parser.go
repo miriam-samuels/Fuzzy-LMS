@@ -9,12 +9,13 @@ import (
 
 // This function takes in an interface for the request and returns a function which takes in a handler function and returns a handler
 
-func ParseRequestBody(w http.ResponseWriter, r *http.Request, i interface{}) {
+func ParseRequestBody(w http.ResponseWriter, r *http.Request, i interface{}) error {
 	err := barf.Request(r).Body().Format(i)
 	if err != nil {
-		SendJSONResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
-		return
+		SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
+		return err
 	}
+	return nil
 }
 
 func ParseMultipartRequestBody(w http.ResponseWriter, r *http.Request) (multipart.File, error) {
@@ -23,4 +24,3 @@ func ParseMultipartRequestBody(w http.ResponseWriter, r *http.Request) (multipar
 	f, err := head.Open()
 	return f, err
 }
-
