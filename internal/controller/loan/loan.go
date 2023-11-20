@@ -54,6 +54,8 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	
+
 	// Form response object
 	res := map[string]interface{}{
 		"id":     id,

@@ -33,3 +33,6 @@ max (maximum) ... take the maximum of the value of the membership group
 probor (probabilistic OR) .... probor(a,b,c) = a + b + c - abc
 NOT methods are supported: 
 NOT a ... 1.0 - a
+
+
+AGGREGATE ALL OUTPUTS

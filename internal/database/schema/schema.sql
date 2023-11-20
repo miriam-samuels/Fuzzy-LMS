@@ -49,7 +49,8 @@ CREATE TABLE applications (
 	type varchar(45) not null,
 	amount float not null,
 	purpose text default '',
-   status varchar(15) default 'pending'
+   status varchar(15) default 'pending',
+   creditworthiness float 
 );
 
 ALTER TABLE applications 
