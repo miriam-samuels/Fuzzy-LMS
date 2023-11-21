@@ -11,8 +11,6 @@ func ParseRequestBody(w http.ResponseWriter, r *http.Request, i interface{}) err
 	err := json.NewDecoder(r.Body).Decode(i)
 	if err != nil {
 		if err.Error() != "EOF" {
-			// send response on unable to parse body
-			SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
 			return err
 		}
 		return err

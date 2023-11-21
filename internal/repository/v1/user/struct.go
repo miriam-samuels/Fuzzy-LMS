@@ -23,7 +23,7 @@ type Borrower struct {
 	Signature      string      `json:"signature"`
 	Job            string      `json:"job"`
 	JobTerm        uint8       `json:"job_term"`
-	Income         string      `json:"income"`
+	Income         float64     `json:"income"`
 	Deck           string      `json:"deck"`
 	HasCriminalRec bool        `json:"has_criminal_record"`
 	Offences       []string    `json:"offences"`
@@ -36,7 +36,8 @@ type Borrower struct {
 	AccountNumber  string      `json:"account_number"`
 	Identification string      `json:"identification"`
 	LoanIds        []string    `json:"loan_ids"`
-	Progress			uint8			`json:"progress"`
+	Progress       uint8       `json:"progress"`
+	CreditScore    uint16      `json:"credit_score"`
 }
 
 type NextOfKin struct {

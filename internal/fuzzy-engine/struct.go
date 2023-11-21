@@ -1,26 +1,26 @@
-package service
+package fis
 
 // input variables
 type CreditScore struct {
-	score uint16
+	Score uint16
 }
 
 type Collateral struct {
-	hasCollateral bool
+	HasCollateral bool
 	Collateral    string
 }
 
 type Income struct {
-	amount float64
+	Amount float64
 }
 
 type Criminal struct {
-	hasCriminalRec bool
+	HasCriminalRec bool
 	Offences       []string
 }
 
 type LoanAmount struct {
-	amount float64
+	Amount float64
 }
 
 // input to fuzzy inference system
@@ -29,7 +29,7 @@ type FISInput struct {
 	Collateral     map[string]float64
 	Income         map[string]float64
 	CriminalRecord map[string]float64
-	LoanAmount map[string]float64
+	LoanAmount     map[string]float64
 }
 
 // output of fuzzy inference system
@@ -43,7 +43,7 @@ type FISRules struct {
 	Collateral       string
 	Income           string
 	CriminalRecord   string
-	LoanAmount   string
+	LoanAmount       string
 	Creditworthiness string
 	// operator string // currently using and operator for now
 }

@@ -6,25 +6,23 @@ import (
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
 	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/user"
+	"github.com/miriam-samuels/loan-management-backend/internal/types"
 
 	"github.com/lib/pq"
 )
 
 func GetProfile(w http.ResponseWriter, r *http.Request) {
 
-	// get id of user making request
-	userId := r.Context().Value("userId").(string)
+	// get id and role of user making request
+	currentUser := r.Context().Value(types.AuthCtxKey{}).(types.AuthCtxKey)
 
-	// get role of user making request
-	userRole := r.Context().Value("userRole").(string)
-
-	if userRole == "borrower" {
+	if currentUser.Role == "borrower" {
 		// variable to store borrower details
 		var brw user.Borrower
 		var kin []byte
 		var guarantor []byte
 
-		brw.ID = userId
+		brw.ID = currentUser.Id
 
 		row := brw.FindBorrowerById()
 		err := row.Scan(
@@ -55,7 +53,8 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			&brw.AccountNumber,
 			&brw.Identification,
 			pq.Array(&brw.LoanIds),
-			&brw.Progress)
+			&brw.Progress,
+			&brw.CreditScore)
 		if err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
 			return
@@ -80,7 +79,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// variable to store user details
 		var user user.User
-		user.ID = userId
+		user.ID = currentUser.Id
 
 		// get user from db
 		row := user.FindUserById()
@@ -100,17 +99,18 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateProfile(w http.ResponseWriter, r *http.Request) {
-	// get id of user making request
-	userId := r.Context().Value("userId").(string)
+	// get id, role of user making request
+	currentUser := r.Context().Value(types.AuthCtxKey{}).(types.AuthCtxKey)
 
-	// get role of user making request
-	userRole := r.Context().Value("userRole").(string)
-
-	if userRole == "borrower" {
+	if currentUser.Role == "borrower" {
 		var user user.Borrower
 
 		// parse request body into user
-		helper.ParseRequestBody(w, r, &user)
+		err := helper.ParseRequestBody(w, r, &user)
+		if err != nil {
+			helper.SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
+			return
+		}
 
 		// convert struct to json for kin
 		kinJSON, err := json.Marshal(user.Kin)
@@ -158,7 +158,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 			user.AccountNumber,
 			user.Identification,
 			user.Progress,
-			userId)
+			currentUser.Id)
 		if err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db"+err.Error(), nil)
 			return

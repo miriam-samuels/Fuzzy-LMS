@@ -1,4 +1,4 @@
-package service
+package fis
 
 // function to calculate the degree to which rating conforms to a subset x
 //
@@ -18,7 +18,7 @@ func calcMembershipDegree(rating float64, minValue float64, maxValue float64) fl
 }
 
 // method to fuzzify input variable income
-func (i *Income) Fuzzify() map[string]float64 {
+func (i *Income) fuzzify() map[string]float64 {
 	// var to store variable value for fuzzification
 	var rating float64
 
@@ -39,10 +39,10 @@ func (i *Income) Fuzzify() map[string]float64 {
 
 	// convert income level to scale of 0 - 10
 	// check if user earns more than max criteria
-	if i.amount >= float64(max) {
+	if i.Amount >= float64(max) {
 		rating = 10 // give maximum rating
 	} else {
-		rating = (i.amount * 10) / max
+		rating = (i.Amount * 10) / max
 	}
 
 	// fuzify data
@@ -60,7 +60,7 @@ func (i *Income) Fuzzify() map[string]float64 {
 }
 
 // method to fuzzify input variable EMPLOYMENT TERM
-func (a *LoanAmount) Fuzzify() map[string]float64 {
+func (a *LoanAmount) fuzzify() map[string]float64 {
 	// var to store variable value for fuzzification
 	var rating float64
 
@@ -81,10 +81,10 @@ func (a *LoanAmount) Fuzzify() map[string]float64 {
 
 	// convert income level to scale of 0 - 10
 	// check if user earns more than max criteria
-	if a.amount >= float64(max) {
+	if a.Amount >= float64(max) {
 		rating = 10 // give maximum rating
 	} else {
-		rating = (a.amount * 10) / max
+		rating = (a.Amount * 10) / max
 	}
 
 	//get degree of membershio of employment term to small employment term set
@@ -101,7 +101,7 @@ func (a *LoanAmount) Fuzzify() map[string]float64 {
 }
 
 // method to fuzzify input variable credit score
-func (c *CreditScore) Fuzzify() map[string]float64 {
+func (c *CreditScore) fuzzify() map[string]float64 {
 	// linguistic variables of credit score
 	var bad float64
 	var average float64
@@ -116,19 +116,19 @@ func (c *CreditScore) Fuzzify() map[string]float64 {
 	maxGood := 850.0
 
 	//get degree of membershio of score to bad credit score set
-	bad = calcMembershipDegree(float64(c.score), minBad, maxBad)
+	bad = calcMembershipDegree(float64(c.Score), minBad, maxBad)
 
 	//get degree of membershio of score to average credit score set
-	average = calcMembershipDegree(float64(c.score), minAverage, maxAverage)
+	average = calcMembershipDegree(float64(c.Score), minAverage, maxAverage)
 
 	//get degree of membershio of score to good credit score set
-	good = calcMembershipDegree(float64(c.score), minGood, maxGood)
+	good = calcMembershipDegree(float64(c.Score), minGood, maxGood)
 
 	// return the degree to which the user belarges to each linguistic variable set
 	return map[string]float64{"bad": bad, "average": average, "good": good}
 }
 
-func (c *Criminal) Fuzzify() map[string]float64 {
+func (c *Criminal) fuzzify() map[string]float64 {
 	// var to store variable value for fuzzification
 	var rating float64
 
@@ -164,7 +164,7 @@ func (c *Criminal) Fuzzify() map[string]float64 {
 	}
 
 	// check if user has criminal record
-	if c.hasCriminalRec {
+	if c.HasCriminalRec {
 		// check then number of offences
 		if len(c.Offences) > 1 {
 			rating = 0
@@ -189,6 +189,47 @@ func (c *Criminal) Fuzzify() map[string]float64 {
 	return map[string]float64{"bad": bad, "average": average, "good": good}
 }
 
-func (brw *Collateral) Fuzzify() uint8 {
-	return 0
+func (c *Collateral) fuzzify() map[string]float64 {
+	// var to store variable value for fuzzification
+	var rating float64
+
+	// linguistic variables of collateral
+	var bad float64
+	var average float64
+	var good float64
+
+	minBad := 0.0
+	maxBad := 4.0
+	minAverage := 2.3
+	maxAverage := 7.0
+	minGood := 7.0
+	maxGood := 10.0
+
+	assets := map[string]float64{
+		"RealEstate":             5,
+		"Vehicles":               4,
+		"SavingsOrFixedDeposits": 5,
+		"StocksAndBonds":         8,
+		"JewelryAndValuables":    6,
+	}
+
+	// check if user has collateral
+	if c.HasCollateral {
+		rating = assets[c.Collateral] // check rating of collateral
+
+	} else {
+		//  if user has no collateral automatically score user bad
+		rating = 0
+	}
+	//get degree of membershio of score to bad criminal record set
+	bad = calcMembershipDegree(rating, minBad, maxBad)
+
+	//get degree of membershio of score to averagecriminal record set
+	average = calcMembershipDegree(rating, minAverage, maxAverage)
+
+	//get degree of membershio of score to good criminal record set
+	good = calcMembershipDegree(rating, minGood, maxGood)
+
+	// return the degree to which the user belarges to each linguistic variable set
+	return map[string]float64{"bad": bad, "average": average, "good": good}
 }

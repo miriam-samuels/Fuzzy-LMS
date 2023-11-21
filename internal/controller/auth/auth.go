@@ -13,7 +13,12 @@ import (
 
 func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	cred := &auth.SignUpCred{}
-	helper.ParseRequestBody(w, r, cred)
+
+	err := helper.ParseRequestBody(w, r, cred)
+	if err != nil {
+		helper.SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
+		return
+	}
 
 	// TODO: Validate request body
 
@@ -99,7 +104,12 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	cred := &auth.SignInCred{}
-	helper.ParseRequestBody(w, r, cred)
+
+	err := helper.ParseRequestBody(w, r, cred)
+	if err != nil {
+		helper.SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
+		return
+	}
 
 	// TODO: Validate request body
 
@@ -109,7 +119,7 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 
 	// get user from db
 	row := cred.FindUserByMail(w)
-	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &passwordHash, &user.Role)
+	err = row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &passwordHash, &user.Role)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// send response that user does not exist

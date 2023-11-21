@@ -6,10 +6,11 @@ type Loan struct {
 	BorrowerId    string `json:"borrowerid "`
 	Type          string `json:"type"`
 	Term          string `json:"term"`
-	Amount        string `json:"amount"`
+	Amount        float64 `json:"amount"`
 	Purpose       string `json:"purpose"`
 	HasCollateral bool   `json:"has_collateral"`
 	Collateral    string `json:"collateral"`
 	CollateralDocs string `json:"collateral_docs"`
 	Status        string `json:"status"`
+	Creditworthiness float32 `json:"creditworthiness"`
 }

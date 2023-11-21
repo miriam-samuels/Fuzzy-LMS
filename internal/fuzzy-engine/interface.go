@@ -1,6 +1,6 @@
-package service
+package fis
 
 type FIS interface {
-	Fuzzify() [3]float64
+	fuzzify() [3]float64
 	Defuzzify() float64
 }

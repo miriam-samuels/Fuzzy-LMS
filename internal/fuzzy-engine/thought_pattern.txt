@@ -1,3 +1,5 @@
+You are proably wondering why i encapsulated ..... i just thought those methods were not needed by other components
+
 GET DATA
 HAVE METHODS TO FUZZIFY EACH INPUT 
 INFERENCE
@@ -36,3 +38,13 @@ NOT a ... 1.0 - a
 
 
 AGGREGATE ALL OUTPUTS
+if we are using mamdani method we probably want to use max/min method to aggregate
+but if you choose to use sugeno then use sum method
+i'm thinking of trying bot just the get the diffrnce in results 
+In the Mamdani method, the output of a fuzzy rule is a fuzzy set, and these fuzzy sets are combined to generate a fuzzy output.
+In the Sugeno method, the output of a fuzzy rule is a linear function.
+
+
+
+
+You are proably wondering why i encapsulated ..... i just thought those methods were not needed by other components

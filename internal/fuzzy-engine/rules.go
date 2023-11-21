@@ -1,4 +1,5 @@
-package service
+package fis
+
 
 //	note: so you don't get confused
 //	these are the rules generated to judge user creditworthiness

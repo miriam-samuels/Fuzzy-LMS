@@ -15,7 +15,7 @@ func (brw *Borrower) FindBorrowerById() sql.Row {
 }
 
 func (brw *Borrower) UpdateBorrower() (*sql.Stmt, error) {
-	query := "UPDATE borrowers SET phone = $1, birth_date = $2, gender = $3, nationality = $4, state_origin = $5, address = $6, passport = $7, signature = $8,  job = $9, job_term = $10, income = $11, deck = $12, has_criminal_record = $13, offences = $14, jail_time = $15, kin = $16, guarantor = $17, nin = $18, bvn = $19, bank_name = $20, account_number = $21, identification = $22, progress = $23 WHERE id = $24"
+	query := "UPDATE borrowers SET phone = $1, birth_date = $2, gender = $3, nationality = $4, state_origin = $5, address = $6, passport = $7, signature = $8,  job = $9, job_term = $10, income = $11, deck = $12, has_criminal_record = $13, offences = $14, jail_time = $15, kin = $16, guarantor = $17, nin = $18, bvn = $19, bank_name = $20, account_number = $21, identification = $22, progress = $23, credit_score= $24 WHERE id = $25"
 	stmt, err := database.LoanDb.Prepare(query)
 	return stmt, err
 }
