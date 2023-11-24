@@ -133,13 +133,19 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 
 	// Unmarshal kin JSON data into structs
 	if err := json.Unmarshal(kin, &brw.Kin); err != nil {
-		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
+		helper.SendResponse(w, http.StatusInternalServerError, false, "error encouteredv::", nil, err)
 		return
 	}
 
 	// Unmarshal guarantor JSON data into structs
 	if err := json.Unmarshal(guarantor, &brw.Guarantor); err != nil {
 		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
+		return
+	}
+
+	// check user profile progres
+	if brw.Progress < 90 {
+		helper.SendResponse(w, http.StatusBadGateway, false, "Please complete profile", nil)
 		return
 	}
 

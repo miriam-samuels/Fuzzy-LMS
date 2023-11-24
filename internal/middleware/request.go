@@ -55,7 +55,6 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 			// validation logic for token (convert _ to claims)
 			claim, valid := helper.VerifyJWT(token)
 			if !valid {
-				// TODO: send response on invalid token provided
 				helper.SendResponse(w, http.StatusUnauthorized, false, "invalid token", nil)
 				return
 			}
@@ -65,7 +64,7 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 			ctx = context.WithValue(ctx, types.AuthCtxKey{}, authKey)
 
 		} else {
-			authKey := types.AuthCtxKey{Id: "ca59b959-2bc1-4eaa-9cbc-4d20617da247", Role: "borrower"}
+			authKey := types.AuthCtxKey{Id: "142b6124-300f-4e10-a70b-f97365fb9857", Role: "borrower"}
 			ctx = context.WithValue(ctx, types.AuthCtxKey{}, authKey)
 		}
 

@@ -1,7 +1,7 @@
 package user
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
@@ -19,8 +19,8 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 	if currentUser.Role == "borrower" {
 		// variable to store borrower details
 		var brw user.Borrower
-		var kin []byte
-		var guarantor []byte
+		var kin []string
+		var guarantor []string
 
 		brw.ID = currentUser.Id
 
@@ -45,8 +45,8 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			&brw.HasCriminalRec,
 			pq.Array(&brw.Offences),
 			&brw.JailTime,
-			&kin,
-			&guarantor,
+			pq.Array(&kin),
+			pq.Array(&guarantor),
 			&brw.Nin,
 			&brw.Bvn,
 			&brw.BankName,
@@ -60,16 +60,42 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Unmarshal kin JSON data into structs
-		if err := json.Unmarshal(kin, &brw.Kin); err != nil {
-			helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
-			return
+		// get kins using borrower id
+		if len(kin) > 0 {
+			rows, err := brw.GetBorrowerKins()
+			if err != nil {
+				helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
+				return
+			}
+
+			for rows.Next() {
+				var kin user.NextOfKin
+				err := rows.Scan(&kin.ID, &kin.BorrowerId, &kin.FirstName, &kin.LastName, &kin.Email, &kin.Phone, &kin.Gender, &kin.Relationship, &kin.Address)
+				if err != nil {
+					helper.SendResponse(w, http.StatusInternalServerError, false, "error getting kins", nil, err)
+					return
+				}
+				brw.Kin = append(brw.Kin, kin)
+			}
 		}
 
-		// Unmarshal guarantor JSON data into structs
-		if err := json.Unmarshal(guarantor, &brw.Guarantor); err != nil {
-			helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
-			return
+		// get gurantors using borrower id
+		if len(guarantor) > 0 {
+			rows, err := brw.GetBorrowerGuarantors()
+			if err != nil {
+				helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
+				return
+			}
+
+			for rows.Next() {
+				var g user.Guarantor
+				err := rows.Scan(&g.ID, &g.BorrowerId, &g.FirstName, &g.LastName, &g.Email, &g.Phone, &g.Gender, &g.Nin, &g.Income, &g.Signature, &g.Address)
+				if err != nil {
+					helper.SendResponse(w, http.StatusInternalServerError, false, "error getting kins", nil, err)
+					return
+				}
+				brw.Guarantor = append(brw.Guarantor, g)
+			}
 		}
 
 		res := map[string]interface{}{
@@ -112,16 +138,124 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// convert struct to json for kin
-		kinJSON, err := json.Marshal(user.Kin)
-		if err != nil {
-			return
+		fmt.Printf("%v", len(user.Kin))
+
+		// update kins table
+		var kins []string
+		if len(user.Kin) > 0 {
+			for i, k := range user.Kin {
+				// check if kin already has id
+				if k.ID == "" {
+					k.ID = helper.GenerateUUID().String()
+					k.BorrowerId = currentUser.Id
+					// edit original array ...
+					user.Kin[i].ID = k.ID
+					user.Kin[i].BorrowerId = k.BorrowerId
+					// insert kin into table
+					stmt, err := k.CreateKin()
+					if err != nil {
+						helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+						return
+					}
+					defer stmt.Close()
+
+					// execute statement for either create or update
+					_, err = stmt.Exec(
+						k.ID,
+						k.BorrowerId,
+						k.FirstName,
+						k.LastName,
+						k.Email,
+						k.Phone,
+						k.Gender,
+						k.Relationship,
+						k.Address,
+					)
+					kins = append(kins, k.ID)
+				} else {
+					// update
+					stmt, err := k.UpdateKin()
+					if err != nil {
+						helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+						return
+					}
+					defer stmt.Close()
+
+					// execute statement for either create or update
+					_, err = stmt.Exec(
+						k.FirstName,
+						k.LastName,
+						k.Email,
+						k.Phone,
+						k.Gender,
+						k.Relationship,
+						k.Address,
+					)
+					kins = append(kins, k.ID)
+				}
+
+			}
 		}
 
-		// convert struct to json for gurantor
-		GuarantorJSON, err := json.Marshal(user.Guarantor)
-		if err != nil {
-			return
+		// generate id for guarantors
+		var guarantors []string
+
+		if len(user.Guarantor) > 0 {
+			for i, g := range user.Guarantor {
+				// check if kin already has id
+				if g.ID == "" {
+					g.ID = helper.GenerateUUID().String()
+					g.BorrowerId = currentUser.Id
+					// edit original aray
+					user.Guarantor[i].ID = g.ID
+					user.Guarantor[i].BorrowerId = g.BorrowerId
+					// insert guarantor into table
+					stmt, err := g.CreateGuarantor()
+					if err != nil {
+						helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+					}
+					defer stmt.Close()
+
+					_, err = stmt.Exec(
+						g.ID,
+						g.BorrowerId,
+						g.FirstName,
+						g.LastName,
+						g.Email,
+						g.Phone,
+						g.Gender,
+						g.Nin,
+						g.Income,
+						g.Signature,
+						g.Address,
+					)
+
+					guarantors = append(guarantors, g.ID)
+				} else {
+					// update
+					stmt, err := g.UpdateGuarantor()
+					if err != nil {
+						helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
+						return
+					}
+					defer stmt.Close()
+
+					_, err = stmt.Exec(
+						g.FirstName,
+						g.LastName,
+						g.Email,
+						g.Phone,
+						g.Gender,
+						g.Nin,
+						g.Income,
+						g.Signature,
+						g.Address,
+						g.ID,
+						g.BorrowerId,
+					)
+					guarantors = append(guarantors, g.ID)
+				}
+			}
 		}
 
 		stmt, err := user.UpdateBorrower()
@@ -132,6 +266,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 
 		defer stmt.Close()
 
+		//  calculate user profile progress
 		user.Progress = user.CalculateProgress()
 
 		_, err = stmt.Exec(
@@ -148,16 +283,17 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 			user.Income,
 			user.Deck,
 			user.HasCriminalRec,
-			pq.Array(user.Offences), //concatenate struct to string seperated by comma
+			pq.Array(user.Offences),
 			user.JailTime,
-			kinJSON,
-			GuarantorJSON,
+			pq.Array(kins),
+			pq.Array(guarantors),
 			user.Nin,
 			user.Bvn,
 			user.BankName,
 			user.AccountNumber,
 			user.Identification,
 			user.Progress,
+			user.CreditScore,
 			currentUser.Id)
 		if err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db"+err.Error(), nil)

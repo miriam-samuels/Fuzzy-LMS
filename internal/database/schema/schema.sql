@@ -26,19 +26,45 @@ CREATE TABLE borrowers (
     income double precision default 0,
     deck text default '',
     has_criminal_record boolean default false,
-    offences text[] DEFAULT '{}',
+    offences text[] DEFAULT array[]::text[],
     jail_time smallint default 0,
-    kin JSONB DEFAULT '{}', 
-    guarantor JSONB DEFAULT '{}',
+    kin text[] DEFAULT array[]::text[], 
+    guarantor text[] DEFAULT array[]::text[],
     nin text default '',
     bvn text default '',
     bank_name text default '',
     account_number text default '',
     identification text default '',
-    loan_ids text[] DEFAULT '{}',
+    loan_ids text[] DEFAULT array[]::text[],
     progress smallint default 10,
-    credit_score smallint 
+    credit_score smallint default 0
 );
+
+CREATE TABLE kins (
+   id text primary key,
+   borrowerid text not null,
+   firstname varchar(20) not NULL,
+   lastname varchar(20) not null,
+   email varchar(40) not null,
+   phone varchar(15) not null,
+   gender varchar(15) not null,
+   relationship varchar(20) not null,
+   address varchar(100) default ''
+)
+
+CREATE TABLE guarantors (
+   id text primary key,
+   borrowerid text not null,
+   firstname varchar(20) not NULL,
+   lastname varchar(20) not null,
+   email varchar(40) not null,
+   phone varchar(15) not null,
+   gender varchar(15) not null,
+   nin text not null,
+   income double precision not null,
+   signature text not null,
+   address varchar(100) default '',
+)
 
 CREATE TABLE applications (
 	id text primary key,
@@ -56,3 +82,9 @@ CREATE TABLE applications (
 
 ALTER TABLE applications 
 ADD FOREIGN KEY(borrowerid) REFERENCES borrowers(id)  ON DELETE CASCADE;
+
+ALTER TABLE kins
+Add FOREIGN KEY(borrowerid) REFERENCES borrowers(id) ON DELETE CASCADE;
+
+ALTER TABLE guarantors
+Add FOREIGN KEY(borrowerid) REFERENCES borrowers(id) ON DELETE CASCADE;

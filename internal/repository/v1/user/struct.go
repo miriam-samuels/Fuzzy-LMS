@@ -41,21 +41,27 @@ type Borrower struct {
 }
 
 type NextOfKin struct {
+	ID           string `json:"id"`
+	BorrowerId   string `json:"borrowerid"`
 	FirstName    string `json:"firstname"`
 	LastName     string `json:"lastname"`
 	Email        string `json:"email"`
 	Phone        string `json:"phone"`
+	Gender       string `json:"gender"`
 	Relationship string `json:"relationship"`
 	Address      string `json:"address"`
 }
 
 type Guarantor struct {
-	FirstName string `json:"firstname"`
-	LastName  string `json:"lastname"`
-	Email     string `json:"email"`
-	Phone     string `json:"phone"`
-	Income    string `json:"income"`
-	Nin       string `json:"nin"`
-	Signature string `json:"signature"`
-	Address   string `json:"address"`
+	ID         string `json:"id"`
+	BorrowerId string `json:"borrowerid"`
+	FirstName  string `json:"firstname"`
+	LastName   string `json:"lastname"`
+	Email      string `json:"email"`
+	Phone      string `json:"phone"`
+	Gender     string `json:"gender"`
+	Income     string `json:"income"`
+	Nin        string `json:"nin"`
+	Signature  string `json:"signature"`
+	Address    string `json:"address"`
 }
