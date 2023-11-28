@@ -1,7 +1,6 @@
 package loan
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -49,7 +48,7 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// slice to store all loan applications
-	var loans []loan.Loan
+	loans := []loan.Loan{}
 	// process query
 	for rows.Next() {
 		var loan loan.Loan
@@ -66,7 +65,7 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	res := map[string]interface{}{
 		"loans": loans,
 	}
-	helper.SendResponse(w, http.StatusOK, true, "Loan application successfully created", res)
+	helper.SendResponse(w, http.StatusOK, true, "Loans fetched", res)
 }
 
 // logic to create a new Loan Application goes here
@@ -88,57 +87,20 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	loanId := "Loan" + helper.GenerateUniqueId(6)
 
 	var brw user.Borrower
-	var kin []byte
-	var guarantor []byte
 
 	// get borrower id from request context
 	brw.ID = r.Context().Value(types.AuthCtxKey{}).(types.AuthCtxKey).Id
 
 	// get borrower information
-	row := brw.FindBorrowerById()
+	row := brw.GetLoanDetails()
 	err = row.Scan(
-		&brw.ID,
-		&brw.FirstName,
-		&brw.LastName,
-		&brw.Email,
-		&brw.Phone,
-		&brw.BirthDate,
-		&brw.Gender,
-		&brw.Nationality,
-		&brw.StateOrigin,
-		&brw.Address,
-		&brw.Passport,
-		&brw.Signature,
-		&brw.Job,
-		&brw.JobTerm,
+		&brw.CreditScore,
 		&brw.Income,
-		&brw.Deck,
 		&brw.HasCriminalRec,
 		pq.Array(&brw.Offences),
-		&brw.JailTime,
-		&kin,
-		&guarantor,
-		&brw.Nin,
-		&brw.Bvn,
-		&brw.BankName,
-		&brw.AccountNumber,
-		&brw.Identification,
-		pq.Array(&brw.LoanIds),
 		&brw.Progress,
-		&brw.CreditScore)
+	)
 	if err != nil {
-		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
-		return
-	}
-
-	// Unmarshal kin JSON data into structs
-	if err := json.Unmarshal(kin, &brw.Kin); err != nil {
-		helper.SendResponse(w, http.StatusInternalServerError, false, "error encouteredv::", nil, err)
-		return
-	}
-
-	// Unmarshal guarantor JSON data into structs
-	if err := json.Unmarshal(guarantor, &brw.Guarantor); err != nil {
 		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered::", nil, err)
 		return
 	}
@@ -151,7 +113,7 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 
 	//  access creditwothiness of application ... dereferenced application
 	creditworthiness := fis.AccessCreditworthiness(brw, *application)
-	fmt.Printf("User Creditworthiness :: %v", creditworthiness)
+	fmt.Printf(" \n User Creditworthiness :: %v \n", creditworthiness)
 
 	// create loan application
 	stmt, err := application.CreateLoan(id, loanId, brw.ID, w)

@@ -12,20 +12,20 @@ func AccessCreditworthiness(brw user.Borrower, application loan.Loan) float64 {
 	var inputs FISInput
 
 	//  get inputs to fuzzify
-	l := LoanAmount{application.Amount}
+	t := Employment{brw.JobTerm}
 	s := CreditScore{brw.CreditScore}
 	c := Criminal{brw.HasCriminalRec, brw.Offences}
 	i := Income{brw.Income}
 	ctl := Collateral{application.HasCollateral, application.Collateral}
 
 	// fuzzify each input
-	inputs.LoanAmount = l.fuzzify()
+	inputs.EmploymentTerm = t.fuzzify()
 	inputs.CreditScore = s.fuzzify()
 	inputs.CriminalRecord = c.fuzzify()
 	inputs.Income = i.fuzzify()
 	inputs.Collateral = ctl.fuzzify()
 
-	fmt.Println(inputs)
+	fmt.Printf("%#v",inputs)
 
 	// pass fuzified input into inference engine
 	output := inputs.inference()

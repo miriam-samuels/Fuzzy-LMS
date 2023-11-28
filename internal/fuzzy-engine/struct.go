@@ -19,8 +19,8 @@ type Criminal struct {
 	Offences       []string
 }
 
-type LoanAmount struct {
-	Amount float64
+type Employment struct {
+	term uint8
 }
 
 // input to fuzzy inference system
@@ -29,7 +29,7 @@ type FISInput struct {
 	Collateral     map[string]float64
 	Income         map[string]float64
 	CriminalRecord map[string]float64
-	LoanAmount     map[string]float64
+	EmploymentTerm     map[string]float64
 }
 
 // output of fuzzy inference system
@@ -39,15 +39,19 @@ type FISOutput struct {
 
 // fuzzy fules for inference
 type FISRules struct {
-	CreditScore      string
-	Collateral       string
-	Income           string
-	CriminalRecord   string
-	LoanAmount       string
-	Creditworthiness string
+	CreditScore, Collateral, Income, CriminalRecord, EmploymentTerm, Creditworthiness string
 	// operator string // currently using and operator for now
 }
 
 type DefuzzifiedOutput struct {
 	Creditworthiness string
+}
+
+// triangulare membership function
+type TriangularMF struct {
+	A, B, C float64 // vertices of a triangle
+}
+
+type TrapezoidalMF struct {
+	A, B, C, D float64 // vertices of a trapezoid
 }

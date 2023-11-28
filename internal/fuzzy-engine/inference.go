@@ -10,18 +10,16 @@ func (input *FISInput) inference() float64 {
 	var set []float64
 
 	// loop through all existing rules in rule base
-	for idx, rule := range Rules {
+	for _, rule := range Rules {
 		//  since we are currently only making use of the 'and' operator we would be finding the minimum
 		//  we do this to generate a fuzzy set
 		var i []float64 = []float64{
 			input.Collateral[rule.Collateral],
 			input.Income[rule.Income],
 			input.CreditScore[rule.CreditScore],
-			input.LoanAmount[rule.LoanAmount],
+			input.EmploymentTerm[rule.EmploymentTerm],
 			input.CriminalRecord[rule.CriminalRecord],
 		}
-
-		fmt.Printf("\n rule:: %d", idx)
 
 		//  pass slice into aggregation function
 		min := minimum(i)
