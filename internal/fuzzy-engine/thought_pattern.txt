@@ -7,7 +7,7 @@ INFERENCE
 
 
 
-FUZZIFICATION THOUGHT PATTERNS
+FUZZIFICATION THOUGHT PATTERNS : using linear interpolation as basis
 (1)
 USING LINEAR LINE GRAPHS
 y = mx + c (linear equation for a straight line where m = slope / gradinet and c = intercept / starting point and y = degree of membership)
@@ -15,11 +15,22 @@ When ploted the degree of bad to rating is decreasing in a straight line
 since it's a decreasing slope  m is negative (-m) ... m = change in y (y2-y1) / change in x(x2-x1) (rise / run)
 y intercept(y co-ordinate when x is 0 vice versa)..(x1,y1)(x2,y2)
 
-MY HEAD IS ACHING....
+Triangular membership func
+// x is the input value.
+// a, b, and c are vertices that define the shape of the triangular membership function.
+// If x is less than or equal to a, the membership is zero.. outside left boundary.
+// If a < x <= b, the membership increases linearly from zero to one as x moves from a to b.
+// If b < x <= c, the membership decreases linearly from one to zero as x moves from b to c.
+// If x is greater than or equal to c, the membership is zero.. outside right boundary.
 
-fuck all this shit 
-
-just use the membership functions 
+Trapezoidal membership func
+// x is the input value.
+// a, b, c, and d are parameters that define the shape of the trapezoidal membership function.
+// If x is less than or equal to a, the membership is zero because the value is outside the left boundary.
+// If a < x <= b, the membership increases linearly from zero to one as x moves from a to b.
+// If b < x <= c, the membership remains one because the input is within the flat region of the trapezoid.
+// If c < x <= d, the membership decreases linearly from one to zero as x moves from c to d.
+// If x is greater than or equal to d, the membership is zero because the input value is outside the right boundary
 
 
 INFERENCE THOUGHT PATTERN

@@ -74,6 +74,9 @@ CREATE TABLE applications (
 	type varchar(45) not null,
 	amount double precision not null,
 	purpose text default '',
+   has_collateral boolean default false,
+   collateral text default '',
+   collateral_docs text default '',
    status varchar(15) default 'pending',
    creditworthiness numeric(4,2)
 );
