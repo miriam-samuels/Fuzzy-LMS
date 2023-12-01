@@ -15,7 +15,7 @@ func (brw *Borrower) FindBorrowerById() sql.Row {
 
 // finc borrower by id
 func (brw *Borrower) GetLoanDetails() sql.Row {
-	row := database.LoanDb.QueryRow("SELECT credit_score, income, has_criminal_record, offences, progress  FROM borrowers WHERE id = $1", brw.ID)
+	row := database.LoanDb.QueryRow("SELECT credit_score, income, has_criminal_record, job_term, offences, progress  FROM borrowers WHERE id = $1", brw.ID)
 	return *row
 }
 

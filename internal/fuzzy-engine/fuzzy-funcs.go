@@ -1,21 +1,26 @@
 package fis
 
-import "math"
+import (
+	"math"
+)
 
 // calculate membership degree on a triangular membership func
 func triangularMF(vertice TriangularMF, x float64) float64 {
-	// calculate for left hand side of triagle
-	distA2B := vertice.B - vertice.A // distance betwwen A and B
-	distA2X := x - vertice.A         // distance betwwen A and x
-	slopeLeft := distA2X / distA2B   // position of x on the lhs
+	var membership float64
+	if x <= vertice.A || x >= vertice.C || x == 0 {
+		membership = 0
+	} else if vertice.A <= x && x <= vertice.B {
+		// calculate for left hand side of triangle
+		distA2B := vertice.B - vertice.A // distance betwwen A and B
+		distA2X := x - vertice.A         // distance betwwen A and x
+		membership = distA2X / distA2B   // position of x on the lhs
+	} else if vertice.B <= x && x <= vertice.C {
+		// calculate for right hand side of triagle
+		distB2C := vertice.C - vertice.B // distance betwwen B and C
+		distX2C := vertice.C - x         // distance betwwen x and C
+		membership = distX2C / distB2C   // position of x on the rhs
+	}
 
-	// calculate for right hand side of triagle
-	distB2C := vertice.C - vertice.B // distance betwwen B and C
-	distX2C := vertice.C - x         // distance betwwen x and C
-	slopeRight := distX2C / distB2C  // position of x on the rhs
-
-	// go with minimum
-	membership := math.Min(slopeLeft, slopeRight)
 	membership = math.Max(0, membership) // for scenarios with no membership and falls in negative value
 
 	return membership
@@ -23,20 +28,26 @@ func triangularMF(vertice TriangularMF, x float64) float64 {
 
 // calculate membership degree on a triangular membership func
 func trapezoidalMF(vertice TrapezoidalMF, x float64) float64 {
-	// calculate for left hand side of trapezoid
-	distA2B := vertice.B - vertice.A
-	distA2X := x - vertice.A
-	slopeLeft := distA2X / distA2B
+	var membership float64
+	if x < vertice.A || x > vertice.D || x == 0 {
+		membership = 0
+	} else if vertice.A <= x && x <= vertice.B {
+		// calculate for left hand side of trapezoid
+		distA2X := x - vertice.A
+		distA2B := vertice.B - vertice.A
+		membership = distA2X / distA2B
 
-	// the constant area of trapezoid
-	slopeB2C := 1
+	} else if vertice.B <= x && x <= vertice.C {
+		// the constant area of trapezoid
+		membership = 1
 
-	// calculate for right hand side of trapezoid
-	distC2D := vertice.D - vertice.C
-	distX2D := vertice.D - x
-	slopeRight := distX2D / distC2D
+	} else if vertice.C <= x && x <= vertice.D {
+		// calculate for right hand side of trapezoid
+		distC2D := vertice.D - vertice.C
+		distX2D := vertice.D - x
+		membership = distX2D / distC2D
+	}
 
-	membership := math.Min(math.Min(slopeLeft, float64(slopeB2C)), slopeRight)
 	membership = math.Max(0, membership)
 
 	return membership

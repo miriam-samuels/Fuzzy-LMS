@@ -78,7 +78,8 @@ CREATE TABLE applications (
    collateral text default '',
    collateral_docs text default '',
    status varchar(15) default 'pending',
-   creditworthiness numeric(4,2)
+   creditworthiness numeric(4,2),
+   created_at TIMESTAMP DEFAULT current_timestamp;
 );
 
 

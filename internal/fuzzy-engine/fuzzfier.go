@@ -1,5 +1,7 @@
 package fis
 
+import "fmt"
+
 // fuzzify input variable income
 func (i *Income) fuzzify() map[string]float64 {
 	var rating float64
@@ -111,7 +113,7 @@ func (c *Criminal) fuzzify() map[string]float64 {
 	if c.HasCriminalRec {
 		// check then number of offences
 		if len(c.Offences) > 1 {
-			rating = 0
+			rating = 1
 		} else {
 			rating = offences[c.Offences[0]] // check rating of first item in user offences arr
 		}
@@ -145,11 +147,16 @@ func (c *Collateral) fuzzify() map[string]float64 {
 	var good float64
 
 	assets := map[string]float64{
-		"RealEstate":             5,
-		"Vehicles":               4,
-		"SavingsOrFixedDeposits": 5,
-		"StocksAndBonds":         8,
-		"JewelryAndValuables":    6,
+		"RealEstat":              1,
+		"RealEsta":               2,
+		"RealEst":                3,
+		"RealEs":                 4,
+		"RealE":                  5,
+		"RealEstate":             6,
+		"Vehicles":               7,
+		"SavingsOrFixedDeposits": 8,
+		"StocksAndBonds":         9,
+		"JewelryAndValuables":    10,
 	}
 
 	// check if user has collateral
@@ -165,13 +172,14 @@ func (c *Collateral) fuzzify() map[string]float64 {
 	bad = trapezoidalMF(vertice, rating)
 
 	//get degree of membershio of score to averagecriminal record set
-	verticeT := TriangularMF{A: 3, B: 7, C: 5}
+	verticeT := TriangularMF{A: 3, B: 5, C: 7}
 	average = triangularMF(verticeT, rating)
 
 	//get degree of membershio of score to good criminal record set
 	vertice = TrapezoidalMF{A: 7, B: 9, C: 10, D: 10}
 	good = trapezoidalMF(vertice, rating)
 
+	fmt.Printf("Collateral")
 	// return the degree to which the user belarges to each linguistic variable set
 	return map[string]float64{"bad": bad, "average": average, "good": good}
 }

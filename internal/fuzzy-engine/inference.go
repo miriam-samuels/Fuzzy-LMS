@@ -1,7 +1,5 @@
 package fis
 
-import "fmt"
-
 //	apply implication method
 //
 // we currently have 243 rules to inference so we are expecting 243 outpute
@@ -21,15 +19,14 @@ func (input *FISInput) inference() float64 {
 			input.CriminalRecord[rule.CriminalRecord],
 		}
 
-		//  pass slice into aggregation function
+		//  pass slice into function.. minimum was used because all rules are currently ANDed
 		min := minimum(i)
 
 		set = append(set, min)
 	}
 
-	fmt.Printf("\n Fuzzy Set %v", set)
-
 	// aggregate output
 	output := maximum(set)
+	// output := defuzzify(set)
 	return output
 }
