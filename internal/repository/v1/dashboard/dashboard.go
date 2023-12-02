@@ -4,8 +4,18 @@ import (
 	"database/sql"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/database"
+	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
+func GetApplicationsCount(currentUser types.AuthCtxKey, status string) *sql.Row {
+	var row *sql.Row
+	if currentUser.Role == "borrower" {
+		row = database.LoanDb.QueryRow("SELECT COUNT(*) FROM applications WHERE status = $1 AND borrwerid = $2", status, currentUser.Id)
+	} else {
+		row = database.LoanDb.QueryRow("SELECT COUNT(*) FROM applications WHERE status = $1", status)
+	}
+	return row
+}
 func GetWeeklyPlotPoints() (*sql.Rows, error) {
 	query := `
     SELECT

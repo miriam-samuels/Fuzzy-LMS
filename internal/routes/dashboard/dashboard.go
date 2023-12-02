@@ -9,5 +9,5 @@ import (
 func RegisterDashboardRoutes(r *mux.Router) {
 	router := r.PathPrefix("/dashboard").Subrouter()
 
-	router.Handle("/loan-stats", middleware.ValidateAuth(dashboard.GetLoanStats)).Methods("GET")
+	router.Handle("/loan-stats", middleware.ValidateAuth(dashboard.GetDashboardData)).Methods("GET")
 }

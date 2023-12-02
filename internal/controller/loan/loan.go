@@ -52,7 +52,7 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	// process query
 	for rows.Next() {
 		var loan loan.Loan
-		err := rows.Scan(&loan.LoanID, &loan.ID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status, &loan.Creditworthiness, &loan.HasCollateral, &loan.CollateralDocs, &loan.Collateral, &loan.CreatedAt)
+		err := rows.Scan(&loan.ID, &loan.LoanID, &loan.BorrowerId, &loan.Type, &loan.Term, &loan.Amount, &loan.Purpose, &loan.Status, &loan.Creditworthiness, &loan.HasCollateral, &loan.CollateralDocs, &loan.Collateral, &loan.CreatedAt)
 		if err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error getting loans", nil, err)
 			return
