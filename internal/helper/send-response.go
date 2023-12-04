@@ -8,12 +8,14 @@ import (
 	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
-func SendResponse(w http.ResponseWriter, statusCode int, status bool, message string, data map[string]interface{}, err ...error) {
+func SendResponse(w http.ResponseWriter, statusCode int, status bool, message string, data map[string]interface{}, err ...error ) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Authorization")
 	w.Header().Set("Content-Type", "application/json")
+
 	w.WriteHeader(statusCode)
+
 	json.NewEncoder(w).Encode(types.Response{
 		Status:  status,
 		Message: message,
@@ -21,6 +23,6 @@ func SendResponse(w http.ResponseWriter, statusCode int, status bool, message st
 	})
 
 	if status == false && len(err) > 0 {
-		log.Println(err[0].Error())
+		log.Printf(message+":: %v", err[0].Error())
 	}
 }

@@ -7,26 +7,31 @@ import (
 	"net/http"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
-	"github.com/miriam-samuels/loan-management-backend/internal/model/v1/auth"
-	"github.com/miriam-samuels/loan-management-backend/internal/model/v1/user"
+	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/auth"
+	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/user"
 )
 
 func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	cred := &auth.SignUpCred{}
-	helper.ParseRequestBody(w, r, cred)
+
+	err := helper.ParseRequestBody(w, r, cred)
+	if err != nil {
+		helper.SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil, err)
+		return
+	}
 
 	// TODO: Validate request body
 
 	// check if user already exists
-	exists, err := cred.CheckUser(w)
-	if err != sql.ErrNoRows {
+	exists, err := cred.CheckUser()
+	if err != nil && err != sql.ErrNoRows {
 		helper.SendResponse(w, http.StatusInternalServerError, false, "error encoutered", nil, err)
 		return
 	}
 
 	// send response that user exists
-	if exists {
-		helper.SendResponse(w, http.StatusBadRequest, false, "user exist", nil)
+	if exists.ID != "" {
+		helper.SendResponse(w, http.StatusBadRequest, false, "user exists", nil)
 		return
 	}
 
@@ -48,7 +53,7 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert user into db
-	stmt, err := cred.CreateUser(userId, encryptedPass, w)
+	stmt, err := cred.CreateUser()
 	if err != nil {
 		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
 		return
@@ -66,7 +71,7 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	//  check if the user is a borrower
 	if cred.Role == "borrower" {
 		//insert into the borrowes table
-		stmt, err := cred.CreateBorrower(userId, w)
+		stmt, err := cred.CreateBorrower()
 		if err != nil {
 			helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
 			return
@@ -99,7 +104,12 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	cred := &auth.SignInCred{}
-	helper.ParseRequestBody(w, r, cred)
+
+	err := helper.ParseRequestBody(w, r, cred)
+	if err != nil {
+		helper.SendResponse(w, http.StatusBadRequest, false, "error parsing body:"+err.Error(), nil)
+		return
+	}
 
 	// TODO: Validate request body
 
@@ -108,8 +118,8 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	var passwordHash string
 
 	// get user from db
-	row := cred.FindUserByMail(w)
-	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &passwordHash, &user.Role)
+	row := cred.FindUserByMail()
+	err = row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &passwordHash, &user.Role)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// send response that user does not exist

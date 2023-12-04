@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/miriam-samuels/loan-management-backend/internal/controllers/user"
+	"github.com/miriam-samuels/loan-management-backend/internal/controller/user"
 	"github.com/miriam-samuels/loan-management-backend/internal/middleware"
 )
 

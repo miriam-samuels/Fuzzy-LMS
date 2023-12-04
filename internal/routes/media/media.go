@@ -2,7 +2,7 @@ package media
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/miriam-samuels/loan-management-backend/internal/controllers/media"
+	"github.com/miriam-samuels/loan-management-backend/internal/controller/media"
 	"github.com/miriam-samuels/loan-management-backend/internal/middleware"
 )
 
