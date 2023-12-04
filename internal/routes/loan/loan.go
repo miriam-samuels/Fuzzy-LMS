@@ -11,6 +11,7 @@ func RegisterLoanRoutes(r *mux.Router) {
 
 	// call middleware that validate auth
 	router.Handle("/loans", middleware.ValidateAuth(loan.GetLoans)).Methods("GET")
+	router.Handle("/loans/:id", middleware.ValidateAuth(loan.GetLoanById)).Methods("GET")
 	router.Handle("/create", middleware.ValidateAuth(loan.CreateLoanApplication)).Methods("POST")
 }
 

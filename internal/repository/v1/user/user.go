@@ -8,9 +8,9 @@ import (
 )
 
 // finc borrower by id
-func (brw *Borrower) FindBorrowerById() sql.Row {
+func (brw *Borrower) FindBorrowerById() *sql.Row {
 	row := database.LoanDb.QueryRow("SELECT * FROM borrowers WHERE id = $1", brw.ID)
-	return *row
+	return row
 }
 
 // finc borrower by id

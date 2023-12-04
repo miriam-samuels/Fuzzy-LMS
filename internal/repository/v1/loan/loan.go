@@ -16,7 +16,7 @@ func (loanApp *Loan) CreateLoan(id uuid.UUID, loanId string, borrowerId string, 
 	return stmt, err
 }
 
-func GetLoans(currentUser types.AuthCtxKey, statusCondition string, w http.ResponseWriter) (*sql.Rows, error) {
+func GetLoans(currentUser types.AuthCtxKey, statusCondition string) (*sql.Rows, error) {
 	var rows *sql.Rows
 	var err error
 	if currentUser.Role == "borrower" {
@@ -28,4 +28,9 @@ func GetLoans(currentUser types.AuthCtxKey, statusCondition string, w http.Respo
 	}
 
 	return rows, err
+}
+
+func (loan *Loan) GetLoanById() *sql.Row {
+	row := database.LoanDb.QueryRow("SELECT * FROM applications WHERE id = $1", loan.ID)
+	return row
 }
