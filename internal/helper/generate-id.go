@@ -13,7 +13,7 @@ func GenerateUUID() uuid.UUID {
 
 func GenerateUniqueId(length int) string {
 	// Define the character set of digits (0-9)
-	characters := "0123456789abcdefghijklmnopqrstuvwxyz"
+	characters := "0123456789"
 
 	// Create a new source for random number generation
 	source := rand.NewSource(time.Now().UnixNano())

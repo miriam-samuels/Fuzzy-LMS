@@ -1,0 +1,61 @@
+You are proably wondering why i encapsulated ..... i just thought those methods were not needed by other components
+
+GET DATA
+HAVE METHODS TO FUZZIFY EACH INPUT 
+INFERENCE
+
+
+
+
+FUZZIFICATION THOUGHT PATTERNS : using linear interpolation as basis
+(1)
+USING LINEAR LINE GRAPHS
+y = mx + c (linear equation for a straight line where m = slope / gradinet and c = intercept / starting point and y = degree of membership)
+When ploted the degree of bad to rating is decreasing in a straight line
+since it's a decreasing slope  m is negative (-m) ... m = change in y (y2-y1) / change in x(x2-x1) (rise / run)
+y intercept(y co-ordinate when x is 0 vice versa)..(x1,y1)(x2,y2)
+
+Triangular membership func
+// x is the input value.
+// a, b, and c are vertices that define the shape of the triangular membership function.
+// If x is less than or equal to a, the membership is zero.. outside left boundary.
+// If a < x <= b, the membership increases linearly from zero to one as x moves from a to b.
+// If b < x <= c, the membership decreases linearly from one to zero as x moves from b to c.
+// If x is greater than or equal to c, the membership is zero.. outside right boundary.
+
+Trapezoidal membership func
+// x is the input value.
+// a, b, c, and d are parameters that define the shape of the trapezoidal membership function.
+// If x is less than or equal to a, the membership is zero because the value is outside the left boundary.
+// If a < x <= b, the membership increases linearly from zero to one as x moves from a to b.
+// If b < x <= c, the membership remains one because the input is within the flat region of the trapezoid.
+// If c < x <= d, the membership decreases linearly from one to zero as x moves from c to d.
+// If x is greater than or equal to d, the membership is zero because the input value is outside the right boundary
+
+
+INFERENCE THOUGHT PATTERN
+now we have successfully fuziffied our data
+apply fuzzy operator to input in order to aggregate them 
+
+AND methods are supported: 
+min (minimum of a,b,c,d,e) ... take the minimum of the value of the membership group
+where a,b,c,d,e are the input variables
+prod (product of x,y,z) .... multiply them
+OR methods are supported: 
+max (maximum) ... take the maximum of the value of the membership group
+probor (probabilistic OR) .... probor(a,b,c) = a + b + c - abc
+NOT methods are supported: 
+NOT a ... 1.0 - a
+
+
+AGGREGATE ALL OUTPUTS
+if we are using mamdani method we probably want to use max/min method to aggregate
+but if you choose to use sugeno then use sum method
+i'm thinking of trying bot just the get the diffrnce in results 
+In the Mamdani method, the output of a fuzzy rule is a fuzzy set, and these fuzzy sets are combined to generate a fuzzy output.
+In the Sugeno method, the output of a fuzzy rule is a linear function.
+
+
+
+
+You are proably wondering why i encapsulated ..... i just thought those methods were not needed by other components

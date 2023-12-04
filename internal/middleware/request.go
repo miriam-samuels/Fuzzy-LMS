@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
+	"github.com/miriam-samuels/loan-management-backend/internal/types"
 )
 
 // function to validate user authorization
@@ -54,18 +55,17 @@ func ValidateAuth(nextHandler http.Handler) http.Handler {
 			// validation logic for token (convert _ to claims)
 			claim, valid := helper.VerifyJWT(token)
 			if !valid {
-				// TODO: send response on invalid token provided
 				helper.SendResponse(w, http.StatusUnauthorized, false, "invalid token", nil)
 				return
 			}
 
 			// store user id and role
-			ctx = context.WithValue(ctx, "userId", claim.UserId)
-			ctx = context.WithValue(ctx, "userRole", claim.Role)
+			authKey := types.AuthCtxKey{Id: claim.UserId, Role: claim.Role}
+			ctx = context.WithValue(ctx, types.AuthCtxKey{}, authKey)
 
 		} else {
-			ctx = context.WithValue(ctx, "userId", "4c9ae046-0836-434f-a046-c372eedcdf6b")
-			ctx = context.WithValue(ctx, "userRole", "borrower")
+			authKey := types.AuthCtxKey{Id: "142b6124-300f-4e10-a70b-f97365fb9857", Role: "borrower"}
+			ctx = context.WithValue(ctx, types.AuthCtxKey{}, authKey)
 		}
 
 		r = r.WithContext(ctx)
@@ -78,7 +78,7 @@ func ValidateAuth(nextHandler http.Handler) http.Handler {
 // This function takes in an interface for the request and returns a function which takes in a handler function and returns a handler
 // TODO: Learn the right way to use a middleware for parsing
 // method implemented on an interface
-// takes in a handler function  and returns a handler 
+// takes in a handler function  and returns a handler
 // func ParseRequest(i interface{}) func(func(http.ResponseWriter, *http.Request)) http.Handler {
 // 	return func(nextHandler func(http.ResponseWriter, *http.Request)) http.Handler {
 // 		// anonymous function using handlerfunc returns a handler
