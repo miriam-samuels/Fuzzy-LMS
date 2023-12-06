@@ -3,6 +3,7 @@ package borrower
 import (
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 	"github.com/miriam-samuels/loan-management-backend/internal/helper"
 	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/user"
@@ -88,7 +89,9 @@ func GetBorrowerById(w http.ResponseWriter, r *http.Request) {
 	var kin []string
 	var guarantor []string
 
-	brw.ID = currentUser.Id
+	// get url paramenters from request url
+	vars := mux.Vars(r)
+	brw.ID = vars["id"]
 
 	row := brw.FindBorrowerById()
 	err := row.Scan(
