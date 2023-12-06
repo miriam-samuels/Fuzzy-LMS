@@ -6,7 +6,7 @@ import (
 	"github.com/miriam-samuels/loan-management-backend/internal/routes/dashboard"
 	"github.com/miriam-samuels/loan-management-backend/internal/routes/loan"
 	"github.com/miriam-samuels/loan-management-backend/internal/routes/media"
-	"github.com/miriam-samuels/loan-management-backend/internal/routes/user"
+	"github.com/miriam-samuels/loan-management-backend/internal/routes/profile"
 )
 
 func Routes(router *mux.Router) {
@@ -16,7 +16,7 @@ func Routes(router *mux.Router) {
 	// Register routes
 	auth.RegisterAuthRoutes(r)
 	loan.RegisterLoanRoutes(r)
-	user.RegisterUserRoutes(r)
+	profile.RegisterProfileRoutes(r)
 	media.RegisterMediaRoutes(r)
 	dashboard.RegisterDashboardRoutes(r)
 }

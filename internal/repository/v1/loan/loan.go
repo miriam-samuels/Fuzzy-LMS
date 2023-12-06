@@ -34,3 +34,9 @@ func (loan *Loan) GetLoanById() *sql.Row {
 	row := database.LoanDb.QueryRow("SELECT * FROM applications WHERE id = $1", loan.ID)
 	return row
 }
+
+func (review *Review) UpdateLoanStatus() (*sql.Stmt, error) {
+	stmt, err := database.LoanDb.Prepare("UPDATE applications SET status= $1 WHERE id=$2 ")
+
+	return stmt, err
+}

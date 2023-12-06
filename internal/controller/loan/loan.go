@@ -271,5 +271,41 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 		"data":   application,
 	}
 	helper.SendResponse(w, http.StatusOK, true, "Loan application successfully created", res)
+}
 
+// review loan application
+func ReviewLoan(w http.ResponseWriter, r *http.Request) {
+	currentUser := r.Context().Value(types.AuthCtxKey{}).(types.AuthCtxKey)
+
+	// check if user making request is a lender
+	if currentUser.Role != "lender" {
+		helper.SendResponse(w, http.StatusUnauthorized, false, "You can't perform this action", nil)
+		return
+	}
+
+	review := &loan.Review{}
+	helper.ParseRequestBody(w, r, review)
+
+	stmt, err := review.UpdateLoanStatus()
+	if err != nil {
+		helper.SendResponse(w, http.StatusInternalServerError, false, "Error encountered", nil)
+		return
+	}
+
+	defer stmt.Close()
+
+	// convert boolean value from body into status equivalent
+	var status string
+	if review.Status {
+		status = "approved"
+	} else {
+		status = "rejected"
+	}
+	_, err = stmt.Exec(status, review.ID)
+	if err != nil {
+		helper.SendResponse(w, http.StatusInternalServerError, false, "Error encountered", nil)
+		return
+	}
+
+	helper.SendResponse(w, http.StatusOK, true, "Loan review sent", nil)
 }
