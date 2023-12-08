@@ -64,7 +64,7 @@ func ValidateAuth(nextHandler http.HandlerFunc) http.Handler {
 			ctx = context.WithValue(ctx, types.AuthCtxKey{}, authKey)
 
 		} else {
-			authKey := types.AuthCtxKey{Id: "142b6124-300f-4e10-a70b-f97365fb9857", Role: "borrower"}
+			authKey := types.AuthCtxKey{Id: "5f18e92b-c841-4a16-bd07-3d4446e0df75", Role: "borrower"}
 			ctx = context.WithValue(ctx, types.AuthCtxKey{}, authKey)
 		}
 

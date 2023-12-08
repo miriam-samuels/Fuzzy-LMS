@@ -11,7 +11,7 @@ func (i *Income) fuzzify() map[string]float64 {
 	var middle float64
 	var upper float64
 
-	const max float64 = 120000000 // max criteria for wealth in real world form
+	const max float64 = 6000000 // max criteria for wealth in real world form
 
 	// convert income level to scale of 0 - 10
 	// check if user earns more than max criteria
@@ -147,11 +147,6 @@ func (c *Collateral) fuzzify() map[string]float64 {
 	var good float64
 
 	assets := map[string]float64{
-		"RealEstat":              1,
-		"RealEsta":               2,
-		"RealEst":                3,
-		"RealEs":                 4,
-		"RealE":                  5,
 		"RealEstate":             6,
 		"Vehicles":               7,
 		"SavingsOrFixedDeposits": 8,

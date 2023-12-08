@@ -24,7 +24,10 @@ func AccessCreditworthiness(brw user.Borrower, application loan.Loan) float64 {
 	inputs.Collateral = ctl.fuzzify()
 
 	// pass fuzified input into inference engine
-	output := inputs.inference()
+	outputSet := inputs.inference()
+
+	//  defuzzify
+	output := defuzzify(outputSet)
 
 	return output
 }

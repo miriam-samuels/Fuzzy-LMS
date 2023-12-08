@@ -25,11 +25,11 @@ type Borrower struct {
 	JobTerm        uint8       `json:"job_term,omitempty"`
 	Income         float64     `json:"income,omitempty"`
 	Deck           string      `json:"deck,omitempty"`
-	HasCriminalRec bool        `json:"has_criminal_record,omitempty"`
+	HasCriminalRec bool        `json:"has_criminal_record"`
 	Offences       []string    `json:"offences,omitempty"`
 	JailTime       uint8       `json:"jail_time,omitempty"`
-	Kin            []NextOfKin `json:"kin,omitempty"`
-	Guarantor      []Guarantor `json:"guarantor,omitempty"`
+	Kin            []NextOfKin `json:"kin"`
+	Guarantor      []Guarantor `json:"guarantor"`
 	Nin            string      `json:"nin,omitempty"`
 	Bvn            string      `json:"bvn,omitempty"`
 	BankName       string      `json:"bank_name,omitempty"`

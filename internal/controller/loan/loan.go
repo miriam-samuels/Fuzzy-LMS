@@ -228,7 +228,7 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check user profile progres
-	if brw.Progress < 90 {
+	if brw.Progress < 80 {
 		helper.SendResponse(w, http.StatusBadGateway, false, "Please complete profile", nil)
 		return
 	}
@@ -258,6 +258,7 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 		application.Collateral,
 		application.CollateralDocs,
 		application.Status,
+		creditworthiness,
 	)
 	if err != nil {
 		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)

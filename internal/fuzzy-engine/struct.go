@@ -39,7 +39,7 @@ type FISOutput struct {
 
 // fuzzy fules for inference
 type FISRules struct {
-	CreditScore, Collateral, Income, CriminalRecord, EmploymentTerm string
+	CreditScore, Collateral, Income, CriminalRecord, EmploymentTerm, Creditworthiness string
 	// operator string // currently using and operator for now
 }
 
