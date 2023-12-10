@@ -15,6 +15,7 @@ func AccessCreditworthiness(brw user.Borrower, application loan.Loan) float64 {
 	c := Criminal{brw.HasCriminalRec, brw.Offences}
 	i := Income{brw.Income}
 	ctl := Collateral{application.HasCollateral, application.Collateral}
+	// fmt.Printf("%v \n %v \n%v \n%v \n%v \n", t, s, c, i, ctl)
 
 	// fuzzify each input
 	inputs.EmploymentTerm = t.fuzzify()
@@ -24,10 +25,10 @@ func AccessCreditworthiness(brw user.Borrower, application loan.Loan) float64 {
 	inputs.Collateral = ctl.fuzzify()
 
 	// pass fuzified input into inference engine
-	outputSet := inputs.inference()
+	bad, avg, good := inputs.inference()
 
 	//  defuzzify
-	output := defuzzify(outputSet)
+	output := defuzzify(bad, avg, good)
 
 	return output
 }

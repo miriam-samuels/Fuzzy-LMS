@@ -8,9 +8,9 @@ import (
 //	apply implication method
 //
 // we currently have 243 rules to inference so we are expecting 243 outpute
-func (input *FISInput) inference() []float64 {
+func (input *FISInput) inference() (float64, float64, float64) {
 	// variable to store fuzzy set
-	inputSet := make(map[string][]float64)
+	set := make(map[string][]float64)
 
 	// loop through all existing rules in rule base
 	for _, rule := range Rules {
@@ -29,19 +29,15 @@ func (input *FISInput) inference() []float64 {
 		// find max between anded values and collateral (we use OR because collateral is not a compulory field)
 		oredValues := math.Max(input.Collateral[rule.Collateral], andedValues)
 
-		fmt.Printf("INPUTSET:: %v \n", oredValues)
-
-		inputSet[rule.Creditworthiness] = append(inputSet[rule.Creditworthiness], oredValues)
-
-		// set = append(set, min)
+		set[rule.Creditworthiness] = append(set[rule.Creditworthiness], oredValues)
 	}
 
-	// apply implication
-	bad := maximum(inputSet["bad"])
-	avg := maximum(inputSet["average"])
-	good := maximum(inputSet["good"])
+	fmt.Printf("BAD:: %v \n AVG:: %v \n GOOD:: %v \n", set["bad"], set["average"], set["good"])
 
-	outputSet := []float64{bad, avg, good}
+	// merge the rule strength of each linguistic term
+	rssBad := rootSumSquare(set["bad"])
+	rssAvg := rootSumSquare(set["average"])
+	rssGood := rootSumSquare(set["good"])
 
-	return outputSet
+	return rssBad, rssAvg, rssGood
 }
