@@ -22,23 +22,8 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 	// get id of user making request
 	currentUser := r.Context().Value(types.AuthCtxKey{}).(types.AuthCtxKey)
 
-	//set status condition for query based on request query params
-	var statusCondition string
-	switch status {
-	case "pending":
-		statusCondition = " AND status = 'pending'"
-	case "reviewing":
-		statusCondition = " AND status = 'reviewing'"
-	case "approved":
-		statusCondition = " AND status = 'approved'"
-	case "declined":
-		statusCondition = " AND status = 'declined'"
-	default:
-		statusCondition = ""
-	}
-
 	// get loans
-	rows, err := loan.GetLoans(currentUser, statusCondition)
+	rows, err := loan.GetLoans(currentUser, status)
 	if err != nil {
 		if err.Error() == unauthorized {
 			helper.SendResponse(w, http.StatusUnauthorized, false, "can't view this information", nil, err)
@@ -61,6 +46,8 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 
 		loans = append(loans, loan)
 	}
+
+	fmt.Printf("Loans :: %v", loans)
 
 	// Form response object
 	res := map[string]interface{}{

@@ -16,9 +16,25 @@ func (loanApp *Loan) CreateLoan(id uuid.UUID, loanId string, borrowerId string, 
 	return stmt, err
 }
 
-func GetLoans(currentUser types.AuthCtxKey, statusCondition string) (*sql.Rows, error) {
+func GetLoans(currentUser types.AuthCtxKey, status string) (*sql.Rows, error) {
 	var rows *sql.Rows
 	var err error
+
+	//set status condition for query based on request query params
+	var statusCondition string
+	switch status {
+	case "pending":
+		statusCondition = " AND status = 'pending'"
+	case "reviewing":
+		statusCondition = " AND status = 'reviewing'"
+	case "approved":
+		statusCondition = " AND status = 'approved'"
+	case "declined":
+		statusCondition = " AND status = 'declined'"
+	default:
+		statusCondition = ""
+	}
+
 	if currentUser.Role == "borrower" {
 		rows, err = database.LoanDb.Query("SELECT * FROM applications WHERE borrowerId = $1"+statusCondition, currentUser.Id)
 	} else if currentUser.Role == "lender" {
