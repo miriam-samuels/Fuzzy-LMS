@@ -9,3 +9,5 @@ The output is the degree of creditworthiness of the borrower.
 The heart of this code base is the fuzzy engine
 
 API Documentation : https://documenter.getpostman.com/view/15288526/2s9YXo1KFc
+
+UI implementation: https://loan-mgmt.netlify.app/
