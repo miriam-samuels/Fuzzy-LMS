@@ -86,3 +86,32 @@ func minimum(val []float64) float64 {
 	}
 	return minValue
 }
+
+func sum(set []float64) float64 {
+	var sum float64
+
+	for i := 0; i < len(set); i++ {
+		sum += set[i]
+	}
+	return sum
+}
+
+func square(set []float64) []float64 {
+	var squaredSet []float64
+
+	for i := 0; i < len(set); i++ {
+		squaredSet = append(squaredSet, set[i]*set[i])
+	}
+
+	return squaredSet
+}
+
+// calculate root sum square
+func rootSumSquare(set []float64) float64 {
+	squares := square(set)
+	sum := sum(squares)
+
+	rss := math.Sqrt(sum)
+
+	return rss
+}

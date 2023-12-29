@@ -1,4 +1,4 @@
-package user
+package profile
 
 import (
 	"fmt"
@@ -60,7 +60,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// get kins using borrower id
+		// get kins from kins table  using borrower id
 		if len(kin) > 0 {
 			rows, err := brw.GetBorrowerKins()
 			if err != nil {
@@ -79,7 +79,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// get gurantors using borrower id
+		// get gurantors from table using borrower id
 		if len(guarantor) > 0 {
 			rows, err := brw.GetBorrowerGuarantors()
 			if err != nil {
@@ -305,5 +305,4 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		helper.SendResponse(w, http.StatusOK, true, "User successfully updated", res)
 	}
-
 }

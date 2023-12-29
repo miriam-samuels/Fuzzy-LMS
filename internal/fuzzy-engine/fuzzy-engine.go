@@ -1,6 +1,8 @@
 package fis
 
 import (
+	"fmt"
+
 	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/loan"
 	"github.com/miriam-samuels/loan-management-backend/internal/repository/v1/user"
 )
@@ -24,7 +26,13 @@ func AccessCreditworthiness(brw user.Borrower, application loan.Loan) float64 {
 	inputs.Collateral = ctl.fuzzify()
 
 	// pass fuzified input into inference engine
-	output := inputs.inference()
+	bad, avg, good := inputs.inference()
+
+	fmt.Println("Fuzzy Data")
+	fmt.Printf("bad - %v  avg - %v  good - %v", bad, avg, good)
+
+	//  defuzzify
+	output := defuzzify(bad, avg, good)
 
 	return output
 }

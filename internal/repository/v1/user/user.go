@@ -8,15 +8,21 @@ import (
 )
 
 // finc borrower by id
-func (brw *Borrower) FindBorrowerById() sql.Row {
+func (brw *Borrower) FindBorrowerById() *sql.Row {
 	row := database.LoanDb.QueryRow("SELECT * FROM borrowers WHERE id = $1", brw.ID)
-	return *row
+	return row
 }
 
-// finc borrower by id
+// get details needed for loan accessment
 func (brw *Borrower) GetLoanDetails() sql.Row {
 	row := database.LoanDb.QueryRow("SELECT credit_score, income, has_criminal_record, job_term, offences, progress  FROM borrowers WHERE id = $1", brw.ID)
 	return *row
+}
+
+// get details needed for loan accessment
+func GetBorrowers() (*sql.Rows, error) {
+	rows, err := database.LoanDb.Query("SELECT * FROM borrowers")
+	return rows, err
 }
 
 func (brw *Borrower) UpdateBorrower() (*sql.Stmt, error) {

@@ -17,3 +17,8 @@ type Loan struct {
 	Creditworthiness float32   `json:"creditworthiness"`
 	CreatedAt        time.Time `json:"created_at"`
 }
+
+type Review struct {
+	ID     string `json:"id"`
+	Status bool `json:"status"`
+}

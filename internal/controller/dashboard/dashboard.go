@@ -51,7 +51,7 @@ func GetDashboardData(w http.ResponseWriter, r *http.Request) {
 	pending := GetApplicationsCount(currentUser, "pending")
 
 	// get loans
-	rows, err := loan.GetLoans(currentUser, "", w)
+	rows, err := loan.GetLoans(currentUser, "")
 
 	// slice to store all loan applications
 	loans := []loan.Loan{}

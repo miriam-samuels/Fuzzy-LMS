@@ -1,14 +1,16 @@
 package fis
 
-func defuzzify(output []float64) float64 {
+func defuzzify(rssBad, rssAvg, rssGood float64) float64 {
 	// Simple defuzzification - centroid method
-	numerator := 0.0
-	denominator := 0.0
 
-	for i, value := range output {
-		numerator += float64(i) * value
-		denominator += value
-	}
+	verticesBad := TrapezoidalMF{A: 0, B: 0, C: 1, D: 4.5} // the point of each vertice
+
+	verticesAvg := TriangularMF{A: 3, B: 5, C: 7}
+
+	verticesGood := TrapezoidalMF{A: 6.5, B: 9.5, C: 10, D: 10}
+
+	numerator := (verticesBad.A * rssBad) + (verticesAvg.B * rssAvg) + (verticesGood.D * rssGood)
+	denominator := rssBad + rssGood + rssAvg
 
 	return numerator / denominator
 }

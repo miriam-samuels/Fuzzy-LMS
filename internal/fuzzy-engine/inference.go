@@ -1,32 +1,40 @@
 package fis
 
+import (
+	"math"
+)
+
 //	apply implication method
 //
 // we currently have 243 rules to inference so we are expecting 243 outpute
-func (input *FISInput) inference() float64 {
+func (input *FISInput) inference() (float64, float64, float64) {
 	// variable to store fuzzy set
-	var set []float64
+	set := make(map[string][]float64)
 
 	// loop through all existing rules in rule base
 	for _, rule := range Rules {
 		//  since we are currently only making use of the 'and' operator we would be finding the minimum
 		//  we do this to generate a fuzzy set
 		var i []float64 = []float64{
-			input.Collateral[rule.Collateral],
 			input.Income[rule.Income],
 			input.CreditScore[rule.CreditScore],
 			input.EmploymentTerm[rule.EmploymentTerm],
 			input.CriminalRecord[rule.CriminalRecord],
 		}
 
-		//  pass slice into function.. minimum was used because all rules are currently ANDed
-		min := minimum(i)
+		//  Antecedent .. minimum was used because all rules are currently ANDed
+		andedValues := minimum(i) // the minimum of anded values
 
-		set = append(set, min)
+		// find max between anded values and collateral (we use OR because collateral is not a compulory field)
+		oredValues := math.Max(input.Collateral[rule.Collateral], andedValues)
+
+		set[rule.Creditworthiness] = append(set[rule.Creditworthiness], oredValues)
 	}
 
-	// aggregate output
-	output := maximum(set)
-	// output := defuzzify(set)
-	return output
+	// merge the rule strength of each linguistic term
+	rssBad := rootSumSquare(set["bad"])
+	rssAvg := rootSumSquare(set["average"])
+	rssGood := rootSumSquare(set["good"])
+
+	return rssBad, rssAvg, rssGood
 }
