@@ -7,3 +7,5 @@ It uses 5 inputs for the fuzzy model (annual income, credit score, loan amount, 
 The output is the degree of creditworthiness of the borrower.
 
 The heart of this code base is the fuzzy engine
+
+API Documentation : https://documenter.getpostman.com/view/15288526/2s9YXo1KFc
