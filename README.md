@@ -1,4 +1,4 @@
-#FUZZY LOGIC LOAN EVALUATION
+# FUZZY LOGIC LOAN EVALUATION
 
 This project is an MVP for a Loan management system using fuzzy logic for decision support to assess borrowers to make loan decisions. 
 
