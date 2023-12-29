@@ -47,12 +47,11 @@ func GetLoans(w http.ResponseWriter, r *http.Request) {
 		loans = append(loans, loan)
 	}
 
-	fmt.Printf("Loans :: %v", loans)
-
 	// Form response object
 	res := map[string]interface{}{
 		"loans": loans,
 	}
+
 	helper.SendResponse(w, http.StatusOK, true, "Loans fetched", res)
 }
 
@@ -222,7 +221,7 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 
 	//  access creditwothiness of application ... dereferenced application
 	creditworthiness := fis.AccessCreditworthiness(brw, *application)
-	fmt.Printf(" \n User Creditworthiness :: %v \n", creditworthiness)
+	fmt.Printf("\nCreditworthiness :: %v out of 10 \n", creditworthiness)
 
 	// create loan application
 	stmt, err := application.CreateLoan(id, loanId, brw.ID, w)

@@ -1,7 +1,6 @@
 package fis
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -31,8 +30,6 @@ func (input *FISInput) inference() (float64, float64, float64) {
 
 		set[rule.Creditworthiness] = append(set[rule.Creditworthiness], oredValues)
 	}
-
-	fmt.Printf("BAD:: %v \n AVG:: %v \n GOOD:: %v \n", set["bad"], set["average"], set["good"])
 
 	// merge the rule strength of each linguistic term
 	rssBad := rootSumSquare(set["bad"])

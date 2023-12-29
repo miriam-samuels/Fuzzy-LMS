@@ -1,7 +1,5 @@
 package fis
 
-import "fmt"
-
 // fuzzify input variable income
 func (i *Income) fuzzify() map[string]float64 {
 	var rating float64
@@ -11,7 +9,7 @@ func (i *Income) fuzzify() map[string]float64 {
 	var middle float64
 	var upper float64
 
-	const max float64 = 6000000 // max criteria for wealth in real world form
+	const max float64 = 5000000 // max criteria for wealth in real world form
 
 	// convert income level to scale of 0 - 10
 	// check if user earns more than max criteria
@@ -151,7 +149,7 @@ func (c *Collateral) fuzzify() map[string]float64 {
 		"Vehicles":               7,
 		"SavingsOrFixedDeposits": 8,
 		"StocksAndBonds":         9,
-		"JewelryAndValuables":    10,
+		"JewelryAndValuables":    5,
 	}
 
 	// check if user has collateral
@@ -174,7 +172,6 @@ func (c *Collateral) fuzzify() map[string]float64 {
 	vertice = TrapezoidalMF{A: 7, B: 9, C: 10, D: 10}
 	good = trapezoidalMF(vertice, rating)
 
-	fmt.Printf("Collateral")
 	// return the degree to which the user belarges to each linguistic variable set
 	return map[string]float64{"bad": bad, "average": average, "good": good}
 }
