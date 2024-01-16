@@ -220,8 +220,7 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//  access creditwothiness of application ... dereferenced application
-	creditworthiness := fis.AccessCreditworthiness(brw, *application)
-	fmt.Printf("\nCreditworthiness :: %v out of 10 \n", creditworthiness)
+	application.Creditworthiness = fis.AccessCreditworthiness(brw, *application)
 
 	// create loan application
 	stmt, err := application.CreateLoan(id, loanId, brw.ID, w)
@@ -232,10 +231,14 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 
 	defer stmt.Close()
 
+	application.LoanID = loanId
+	application.ID = id.String()
+	application.BorrowerId = brw.ID
+
 	_, err = stmt.Exec(
-		id,
-		loanId,
-		brw.ID,
+		application.ID,
+		application.LoanID,
+		application.BorrowerId,
 		application.Type,
 		application.Term,
 		application.Amount,
@@ -244,20 +247,16 @@ func CreateLoanApplication(w http.ResponseWriter, r *http.Request) {
 		application.Collateral,
 		application.CollateralDocs,
 		application.Status,
-		creditworthiness,
+		application.Creditworthiness,
 	)
 	if err != nil {
 		helper.SendResponse(w, http.StatusInternalServerError, false, "error saving to db", nil, err)
 		return
 	}
+	
+	fmt.Printf("\nCreditworthiness :: %v out of 10 \n", application.Creditworthiness)
 
-	// Form response object
-	res := map[string]interface{}{
-		"id":     id,
-		"loanId": loanId,
-		"data":   application,
-	}
-	helper.SendResponse(w, http.StatusOK, true, "Loan application successfully created", res)
+	helper.SendResponse(w, http.StatusOK, true, "Loan application successfully created", application)
 }
 
 // review loan application

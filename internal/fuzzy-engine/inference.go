@@ -1,6 +1,7 @@
 package fis
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -8,6 +9,7 @@ import (
 //
 // we currently have 243 rules to inference so we are expecting 243 outpute
 func (input *FISInput) inference() (float64, float64, float64) {
+	fmt.Printf("%+v", input)
 	// variable to store fuzzy set
 	set := make(map[string][]float64)
 

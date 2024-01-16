@@ -14,7 +14,7 @@ type Loan struct {
 	Collateral       string    `json:"collateral"`
 	CollateralDocs   string    `json:"collateral_docs"`
 	Status           string    `json:"status"`
-	Creditworthiness float32   `json:"creditworthiness"`
+	Creditworthiness float64   `json:"creditworthiness"`
 	CreatedAt        time.Time `json:"created_at"`
 }
 
