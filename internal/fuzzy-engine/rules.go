@@ -3,10 +3,8 @@ package fis
 //	note: so you don't get confused
 //	these are the rules generated to judge user creditworthiness
 //	{CreditScore, Collateral, Income, CriminalRecord, EmploymentTerm, Creditworthines}
-// {""bad",", ""bad",", ""lower",", ""bad",", ""short",", ""bad","},
 //  if credicscore is "bad", and collatral is "bad", and incomelevel is "lower", and criminalrecord is "bad", and employmentterm is "short",
 // then creditworthiness is "bad",
-// was going to use numeral before .. but did not want to confuse the reader more... pele dear
 //  could not think of a beeter pathway .. if you do fing one ... tell me and just create a pr with the solution
 
 var Rules []FISRules = []FISRules{
@@ -26,17 +24,17 @@ var Rules []FISRules = []FISRules{
 	{CreditScore: "average", Collateral: "average", Income: "middle", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "good", Collateral: "average", Income: "middle", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "bad", Collateral: "good", Income: "middle", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
-	{CreditScore: "average", Collateral: "good", Income: "middle", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
-	{CreditScore: "good", Collateral: "good", Income: "middle", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
+	{CreditScore: "average", Collateral: "good", Income: "middle", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "average"},
+	{CreditScore: "good", Collateral: "good", Income: "middle", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "average"},
 	{CreditScore: "bad", Collateral: "bad", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "average", Collateral: "bad", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "good", Collateral: "bad", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "bad", Collateral: "average", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
-	{CreditScore: "average", Collateral: "average", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
-	{CreditScore: "good", Collateral: "average", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
+	{CreditScore: "average", Collateral: "average", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "average"},
+	{CreditScore: "good", Collateral: "average", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "average"},
 	{CreditScore: "bad", Collateral: "good", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
-	{CreditScore: "average", Collateral: "good", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
-	{CreditScore: "good", Collateral: "good", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "bad"},
+	{CreditScore: "average", Collateral: "good", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "average"},
+	{CreditScore: "good", Collateral: "good", Income: "upper", CriminalRecord: "bad", EmploymentTerm: "short", Creditworthiness: "average"},
 	{CreditScore: "bad", Collateral: "bad", Income: "lower", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "average", Collateral: "bad", Income: "lower", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "good", Collateral: "bad", Income: "lower", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "bad"},
@@ -45,7 +43,7 @@ var Rules []FISRules = []FISRules{
 	{CreditScore: "good", Collateral: "average", Income: "lower", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "bad", Collateral: "good", Income: "lower", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "average", Collateral: "good", Income: "lower", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "bad"},
-	{CreditScore: "good", Collateral: "good", Income: "lower", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "bad"},
+	{CreditScore: "good", Collateral: "good", Income: "lower", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "average"},
 	{CreditScore: "bad", Collateral: "bad", Income: "middle", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "bad"},
 	{CreditScore: "average", Collateral: "bad", Income: "middle", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "average"},
 	{CreditScore: "good", Collateral: "bad", Income: "middle", CriminalRecord: "fair", EmploymentTerm: "short", Creditworthiness: "average"},
@@ -241,7 +239,7 @@ var Rules []FISRules = []FISRules{
 	{CreditScore: "bad", Collateral: "average", Income: "middle", CriminalRecord: "good", EmploymentTerm: "long", Creditworthiness: "bad"},
 	{CreditScore: "average", Collateral: "average", Income: "middle", CriminalRecord: "good", EmploymentTerm: "long", Creditworthiness: "average"},
 	{CreditScore: "good", Collateral: "average", Income: "middle", CriminalRecord: "good", EmploymentTerm: "long", Creditworthiness: "good"},
-	{CreditScore: "bad", Collateral: "good", Income: "middle", CriminalRecord: "good", EmploymentTerm: "long", Creditworthiness: "bad"},
+	{CreditScore: "bad", Collateral: "good", Income: "middle", CriminalRecord: "good", EmploymentTerm: "long", Creditworthiness: "average"},
 	{CreditScore: "average", Collateral: "good", Income: "middle", CriminalRecord: "good", EmploymentTerm: "long", Creditworthiness: "average"},
 	{CreditScore: "good", Collateral: "good", Income: "middle", CriminalRecord: "good", EmploymentTerm: "long", Creditworthiness: "good"},
 	{CreditScore: "bad", Collateral: "bad", Income: "upper", CriminalRecord: "good", EmploymentTerm: "long", Creditworthiness: "average"},

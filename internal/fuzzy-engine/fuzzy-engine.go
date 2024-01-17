@@ -28,7 +28,6 @@ func AccessCreditworthiness(brw user.Borrower, application loan.Loan) float64 {
 	// pass fuzified input into inference engine
 	bad, avg, good := inputs.inference()
 
-	fmt.Println("Fuzzy Data")
 	fmt.Printf("bad - %v  avg - %v  good - %v", bad, avg, good)
 
 	//  defuzzify

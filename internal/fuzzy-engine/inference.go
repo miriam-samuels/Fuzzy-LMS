@@ -2,7 +2,6 @@ package fis
 
 import (
 	"fmt"
-	"math"
 )
 
 //	apply implication method
@@ -22,15 +21,16 @@ func (input *FISInput) inference() (float64, float64, float64) {
 			input.CreditScore[rule.CreditScore],
 			input.EmploymentTerm[rule.EmploymentTerm],
 			input.CriminalRecord[rule.CriminalRecord],
+			input.Collateral[rule.Collateral],
 		}
 
 		//  Antecedent .. minimum was used because all rules are currently ANDed
-		andedValues := minimum(i) // the minimum of anded values
+		val := minimum(i) // the minimum of anded values
 
 		// find max between anded values and collateral (we use OR because collateral is not a compulory field)
-		oredValues := math.Max(input.Collateral[rule.Collateral], andedValues)
+		// val = math.Min(input.Collateral[rule.Collateral], val)
 
-		set[rule.Creditworthiness] = append(set[rule.Creditworthiness], oredValues)
+		set[rule.Creditworthiness] = append(set[rule.Creditworthiness], val)
 	}
 
 	// merge the rule strength of each linguistic term
